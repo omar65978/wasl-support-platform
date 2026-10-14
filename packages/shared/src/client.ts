@@ -1,3 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import { config } from './config';
-export const supabase = createClient(config.supabaseUrl, config.supabasePublishableKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'wasl:auth' } });
+export const supabase = createClient(config.supabaseUrl, config.supabasePublishableKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storageKey: 'wasl:auth',
+  },
+});

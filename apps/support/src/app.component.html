@@ -1,3 +1,177 @@
-@if(s.session().loading){<div class="full-center"><span class="brand"><span class="brand-symbol"></span>{{s.t('brand')}}</span><div class="loading" role="status"><span class="spinner"></span>{{s.t('loginPending')}}</div></div>}@else if(!s.session().profile){<app-auth/>}@else if(s.session().profile?.role==='customer'){<div class="full-center"><h1>{{s.t('wrongRole')}}</h1><p>{{s.t('wrongRoleBody')}}</p><a class="btn btn-primary" [href]="customerUrl">{{s.t('openWorkspace')}}</a><button class="btn btn-secondary" (click)="signOut()">{{s.t('signOut')}}</button>@if(error){<div class="alert alert-error" role="alert">{{s.error(error)}}</div>}</div>}@else{
-<div class="workspace-shell"><a href="#workspace-main" class="skip-link" (click)="$event.preventDefault();main.focus()">{{s.t('allRequests')}}</a>@if(menuOpen){<button class="nav-overlay" [attr.aria-label]="s.t('close')" (click)="closeMenu()"></button>}<aside class="workspace-sidebar" [class.open]="menuOpen"><a routerLink="/requests" class="workspace-brand" (click)="closeMenu()"><span class="brand"><span class="brand-symbol"></span>{{s.t('brand')}}</span><span class="workspace-brand-caption">{{s.t('supportWorkspace')}}</span></a><div class="workspace-switcher"><span class="team-monogram"><app-icon name="users" [size]="20"/></span><div><strong>{{s.t('team')}}</strong><span>{{s.t('workspace')}}</span></div><span class="workspace-switch-dot"></span></div><nav class="side-nav" [attr.aria-label]="s.t('workspace')"><a routerLink="/requests" [class.active]="active('all')" (click)="closeMenu()"><app-icon name="inbox"/>{{s.t('allRequests')}}</a><a routerLink="/requests" [queryParams]="{owner:'mine'}" [class.active]="active('mine')" (click)="closeMenu()"><app-icon name="user"/>{{s.t('myQueue')}}</a><a routerLink="/requests" [queryParams]="{owner:'unassigned'}" [class.active]="active('unassigned')" (click)="closeMenu()"><app-icon name="users"/>{{s.t('unassigned')}}</a><a routerLink="/requests" [queryParams]="{urgency:'urgent'}" [class.active]="active('urgent')" (click)="closeMenu()"><app-icon name="bolt"/>{{s.t('urgentQueue')}}</a>@if(s.session().profile?.role==='manager'){<div class="nav-divider"></div><a routerLink="/overview" [class.active]="active('overview')" (click)="closeMenu()"><app-icon name="chart"/>{{s.t('overview')}}</a>}</nav><div class="sidebar-bottom"><div class="sidebar-note"><span class="note-symbol"><app-icon name="message" [size]="21"/></span><h3>{{s.t('heroNote')}}</h3><p>{{s.t('teamSubtitle')}}</p></div><a [href]="customerUrl" class="portal-link"><app-icon name="globe" [size]="16"/>{{s.t('customerPortal')}}<span>↗</span></a><div class="sidebar-identity"><span class="avatar avatar-warm">{{s.initials(s.session().profile!.full_name)}}</span><div><strong>{{s.session().profile!.full_name}}</strong><small>{{s.t(s.session().profile!.role)}}</small></div><button class="btn btn-quiet btn-small" (click)="signOut()" [attr.aria-label]="s.t('signOut')"><app-icon name="logout" [size]="16"/></button></div></div></aside><div class="workspace-body"><header class="workspace-topbar"><div class="flex"><button class="icon-btn mobile-menu" [attr.aria-label]="s.t('workspace')" [attr.aria-expanded]="menuOpen" (click)="menuOpen=!menuOpen"><app-icon name="menu"/></button><span class="muted">{{s.t('workspace')}}</span><span class="topbar-slash">/</span><strong>{{s.t(router.url.startsWith('/overview')?'overview':'allRequests')}}</strong></div><div class="flex"><span class="topbar-role"><app-icon name="shield" [size]="13"/>{{s.t(s.session().profile!.role)}}</span><button class="btn btn-quiet btn-small" (click)="s.toggleLanguage()" [attr.aria-label]="s.t('switchLanguage')"><app-icon name="globe" [size]="15"/>{{s.t('language')}}</button></div></header>@if(s.session().demo){<div class="demo-banner">{{s.t('demoNotice')}}</div>}<main class="workspace-main" id="workspace-main" #main tabindex="-1">@if(error){<div class="alert alert-error" role="alert">{{s.error(error)}}</div>}<router-outlet/><footer class="footer"><span>{{s.t('footer')}}</span><span class="flex"><app-icon name="shield" [size]="13"/>{{s.t(s.session().demo?'demoMode':'connected')}}</span></footer></main></div></div>}
-@if(s.notice();as notice){<div class="alert alert-success toast" role="status"><span>{{s.t(notice)}}</span><button class="btn btn-quiet btn-small" [attr.aria-label]="s.t('close')" (click)="s.notice.set(null)"><app-icon name="close" [size]="14"/></button></div>}
+@if (s.session().loading) {
+  <div class="full-center">
+    <span class="brand">
+      <span class="brand-symbol"></span>
+      {{ s.t('brand') }}
+    </span>
+    <div class="loading" role="status">
+      <span class="spinner"></span>
+      {{ s.t('loginPending') }}
+    </div>
+  </div>
+} @else if (!s.session().profile) {
+  <app-auth />
+} @else if (s.session().profile?.role === 'customer') {
+  <div class="full-center">
+    <h1>{{ s.t('wrongRole') }}</h1>
+    <p>{{ s.t('wrongRoleBody') }}</p>
+    <a class="btn btn-primary" [href]="customerUrl">{{ s.t('openWorkspace') }}</a>
+    <button class="btn btn-secondary" (click)="signOut()">{{ s.t('signOut') }}</button>
+    @if (error) {
+      <div class="alert alert-error" role="alert">{{ s.error(error) }}</div>
+    }
+  </div>
+} @else {
+  <div class="workspace-shell">
+    <a href="#workspace-main" class="skip-link" (click)="$event.preventDefault(); main.focus()">
+      {{ s.t('allRequests') }}
+    </a>
+    @if (menuOpen) {
+      <button class="nav-overlay" [attr.aria-label]="s.t('close')" (click)="closeMenu()"></button>
+    }
+    <aside class="workspace-sidebar" [class.open]="menuOpen">
+      <a routerLink="/requests" class="workspace-brand" (click)="closeMenu()">
+        <span class="brand">
+          <span class="brand-symbol"></span>
+          {{ s.t('brand') }}
+        </span>
+        <span class="workspace-brand-caption">{{ s.t('supportWorkspace') }}</span>
+      </a>
+      <div class="workspace-switcher">
+        <span class="team-monogram"><app-icon name="users" [size]="20" /></span>
+        <div>
+          <strong>{{ s.t('team') }}</strong>
+          <span>{{ s.t('workspace') }}</span>
+        </div>
+        <span class="workspace-switch-dot"></span>
+      </div>
+      <nav class="side-nav" [attr.aria-label]="s.t('workspace')">
+        <a routerLink="/requests" [class.active]="active('all')" (click)="closeMenu()">
+          <app-icon name="inbox" />
+          {{ s.t('allRequests') }}
+        </a>
+        <a
+          routerLink="/requests"
+          [queryParams]="{ owner: 'mine' }"
+          [class.active]="active('mine')"
+          (click)="closeMenu()"
+        >
+          <app-icon name="user" />
+          {{ s.t('myQueue') }}
+        </a>
+        <a
+          routerLink="/requests"
+          [queryParams]="{ owner: 'unassigned' }"
+          [class.active]="active('unassigned')"
+          (click)="closeMenu()"
+        >
+          <app-icon name="users" />
+          {{ s.t('unassigned') }}
+        </a>
+        <a
+          routerLink="/requests"
+          [queryParams]="{ urgency: 'urgent' }"
+          [class.active]="active('urgent')"
+          (click)="closeMenu()"
+        >
+          <app-icon name="bolt" />
+          {{ s.t('urgentQueue') }}
+        </a>
+        @if (s.session().profile?.role === 'manager') {
+          <div class="nav-divider"></div>
+          <a routerLink="/overview" [class.active]="active('overview')" (click)="closeMenu()">
+            <app-icon name="chart" />
+            {{ s.t('overview') }}
+          </a>
+        }
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-note">
+          <span class="note-symbol"><app-icon name="message" [size]="21" /></span>
+          <h3>{{ s.t('heroNote') }}</h3>
+          <p>{{ s.t('teamSubtitle') }}</p>
+        </div>
+        <a [href]="customerUrl" class="portal-link">
+          <app-icon name="globe" [size]="16" />
+          {{ s.t('customerPortal') }}
+          <span>↗</span>
+        </a>
+        <div class="sidebar-identity">
+          <span class="avatar avatar-warm">{{ s.initials(s.session().profile!.full_name) }}</span>
+          <div>
+            <strong>{{ s.session().profile!.full_name }}</strong>
+            <small>{{ s.t(s.session().profile!.role) }}</small>
+          </div>
+          <button
+            class="btn btn-quiet btn-small"
+            (click)="signOut()"
+            [attr.aria-label]="s.t('signOut')"
+          >
+            <app-icon name="logout" [size]="16" />
+          </button>
+        </div>
+      </div>
+    </aside>
+    <div class="workspace-body">
+      <header class="workspace-topbar">
+        <div class="flex">
+          <button
+            class="icon-btn mobile-menu"
+            [attr.aria-label]="s.t('workspace')"
+            [attr.aria-expanded]="menuOpen"
+            (click)="menuOpen = !menuOpen"
+          >
+            <app-icon name="menu" />
+          </button>
+          <span class="muted">{{ s.t('workspace') }}</span>
+          <span class="topbar-slash">/</span>
+          <strong>
+            {{ s.t(router.url.startsWith('/overview') ? 'overview' : 'allRequests') }}
+          </strong>
+        </div>
+        <div class="flex">
+          <span class="topbar-role">
+            <app-icon name="shield" [size]="13" />
+            {{ s.t(s.session().profile!.role) }}
+          </span>
+          <button
+            class="btn btn-quiet btn-small"
+            (click)="s.toggleLanguage()"
+            [attr.aria-label]="s.t('switchLanguage')"
+          >
+            <app-icon name="globe" [size]="15" />
+            {{ s.t('language') }}
+          </button>
+        </div>
+      </header>
+      @if (s.session().demo) {
+        <div class="demo-banner">{{ s.t('demoNotice') }}</div>
+      }
+      <main class="workspace-main" id="workspace-main" #main tabindex="-1">
+        @if (error) {
+          <div class="alert alert-error" role="alert">{{ s.error(error) }}</div>
+        }
+        <router-outlet />
+        <footer class="footer">
+          <span>{{ s.t('footer') }}</span>
+          <span class="flex">
+            <app-icon name="shield" [size]="13" />
+            {{ s.t(s.session().demo ? 'demoMode' : 'connected') }}
+          </span>
+        </footer>
+      </main>
+    </div>
+  </div>
+}
+@if (s.notice(); as notice) {
+  <div class="alert alert-success toast" role="status">
+    <span>{{ s.t(notice) }}</span>
+    <button
+      class="btn btn-quiet btn-small"
+      [attr.aria-label]="s.t('close')"
+      (click)="s.notice.set(null)"
+    >
+      <app-icon name="close" [size]="14" />
+    </button>
+  </div>
+}

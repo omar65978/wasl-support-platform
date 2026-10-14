@@ -7,19 +7,12 @@
     "useDefineForClassFields": false,
     "strict": true,
     "skipLibCheck": true,
-    "lib": [
-      "ES2022",
-      "DOM"
-    ],
+    "lib": ["ES2022", "DOM"],
     "outDir": "./dist/out-tsc"
   },
   "angularCompilerOptions": {
     "strictTemplates": true
   },
-  "files": [
-    "src/main.ts"
-  ],
-  "include": [
-    "../../packages/shared/src/**/*.ts"
-  ]
+  "files": ["src/main.ts"],
+  "include": ["../../packages/shared/src/**/*.ts"]
 }

@@ -3,15 +3,155 @@ import { RouterLink } from '@angular/router';
 import { emptySummary, type Summary, type Workload } from '@wasl/shared';
 import { AppState } from './state';
 import { IconComponent } from './icon.component';
-@Component({ selector:'app-overview',standalone:true,imports:[RouterLink,IconComponent],template:`
-<div class="workspace-heading"><div><h1>{{s.t('overviewTitle')}}</h1><p>{{s.t('overviewSubtitle')}}</p></div><button class="btn btn-secondary btn-small" (click)="load()" [disabled]="loading"><app-icon name="refresh" [size]="14"/>{{s.t('refresh')}}</button></div>
-@if(error){<div class="alert alert-error" role="alert">{{s.error(error)}}</div>}
-@if(loading){<div class="loading" role="status"><span class="spinner"></span>{{s.t('loading')}}</div>}@else{<div class="overview-summary"><div class="overview-main-stat"><app-icon name="chart" [size]="28"/><span>{{s.t('activeRequests')}}</span><strong>{{summary.active}}</strong><p>{{s.t('supportSubtitle')}}</p></div><div class="overview-stats"><a routerLink="/requests" [queryParams]="{owner:'unassigned'}"><span>{{s.t('unassigned')}}</span><strong>{{summary.unassigned}}</strong><app-icon name="arrow" [size]="16"/></a><a routerLink="/requests" [queryParams]="{urgency:'urgent'}"><span>{{s.t('urgentAttention')}}</span><strong>{{summary.urgent}}</strong><app-icon name="arrow" [size]="16"/></a><div><span>{{s.t('waitingOnCustomer')}}</span><strong>{{summary.waiting}}</strong></div><div><span>{{s.t('completed')}}</span><strong>{{summary.resolved}}</strong></div></div></div><section class="panel"><div class="conversation-header"><div><h2>{{s.t('workload')}}</h2><p class="small muted">{{s.t('workloadHint')}}</p></div><span class="live-label"><span class="online-dot"></span>{{s.t('live')}}</span></div><div class="table-wrap"><table class="request-table workload-table"><thead><tr><th>{{s.t('employee')}}</th><th>{{s.t('active')}}</th><th>{{s.t('waitingOnCustomer')}}</th><th>{{s.t('urgent')}}</th><th>{{s.t('completed')}}</th></tr></thead><tbody>@for(p of workload;track p.id){<tr><td><a class="identity" routerLink="/requests" [queryParams]="{owner:p.id}"><span class="avatar">{{s.initials(p.full_name)}}</span><div><strong>{{p.full_name}}</strong><small>{{s.t(p.role)}}</small></div></a></td><td><div class="workload-bar-cell"><strong>{{p.active}}</strong><span class="workload-bar"><span [style.width.%]="p.active/maxActive*100"></span></span></div></td><td>{{p.waiting}}</td><td><span [class.urgent-number]="p.urgent>0">{{p.urgent}}</span></td><td>{{p.resolved}}</td></tr>}@empty{<tr><td colspan="5">{{s.t('noWorkload')}}</td></tr>}</tbody></table></div></section>}
-` })
-export class OverviewComponent implements OnInit,OnDestroy {
-  readonly s=inject(AppState);summary:Summary=emptySummary();workload:Workload[]=[];loading=true;error:unknown;private alive=true;private busy=false;private timer?:ReturnType<typeof setInterval>;
-  get maxActive(){return Math.max(1,...this.workload.map(p=>p.active));}
-  ngOnInit(){this.load();this.timer=setInterval(()=>{if(!document.hidden&&!this.busy)this.load();},15000);}
-  ngOnDestroy(){this.alive=false;clearInterval(this.timer);}
-  async load(){if(this.busy)return;this.busy=true;try{const [summary,workload]=await Promise.all([this.s.api.summary(),this.s.api.workload()]);if(this.alive){this.summary=summary;this.workload=workload;this.error=null;}}catch(e){if(this.alive)this.error=e;}finally{if(this.alive)this.loading=false;this.busy=false;}}
+@Component({
+  selector: 'app-overview',
+  standalone: true,
+  imports: [RouterLink, IconComponent],
+  template: `
+    <div class="workspace-heading">
+      <div>
+        <h1>{{ s.t('overviewTitle') }}</h1>
+        <p>{{ s.t('overviewSubtitle') }}</p>
+      </div>
+      <button class="btn btn-secondary btn-small" (click)="load()" [disabled]="loading">
+        <app-icon name="refresh" [size]="14" />
+        {{ s.t('refresh') }}
+      </button>
+    </div>
+    @if (error) {
+      <div class="alert alert-error" role="alert">{{ s.error(error) }}</div>
+    }
+    @if (loading) {
+      <div class="loading" role="status">
+        <span class="spinner"></span>
+        {{ s.t('loading') }}
+      </div>
+    } @else {
+      <div class="overview-summary">
+        <div class="overview-main-stat">
+          <app-icon name="chart" [size]="28" />
+          <span>{{ s.t('activeRequests') }}</span>
+          <strong>{{ summary.active }}</strong>
+          <p>{{ s.t('supportSubtitle') }}</p>
+        </div>
+        <div class="overview-stats">
+          <a routerLink="/requests" [queryParams]="{ owner: 'unassigned' }">
+            <span>{{ s.t('unassigned') }}</span>
+            <strong>{{ summary.unassigned }}</strong>
+            <app-icon name="arrow" [size]="16" />
+          </a>
+          <a routerLink="/requests" [queryParams]="{ urgency: 'urgent' }">
+            <span>{{ s.t('urgentAttention') }}</span>
+            <strong>{{ summary.urgent }}</strong>
+            <app-icon name="arrow" [size]="16" />
+          </a>
+          <div>
+            <span>{{ s.t('waitingOnCustomer') }}</span>
+            <strong>{{ summary.waiting }}</strong>
+          </div>
+          <div>
+            <span>{{ s.t('completed') }}</span>
+            <strong>{{ summary.resolved }}</strong>
+          </div>
+        </div>
+      </div>
+      <section class="panel">
+        <div class="conversation-header">
+          <div>
+            <h2>{{ s.t('workload') }}</h2>
+            <p class="small muted">{{ s.t('workloadHint') }}</p>
+          </div>
+          <span class="live-label">
+            <span class="online-dot"></span>
+            {{ s.t('live') }}
+          </span>
+        </div>
+        <div class="table-wrap">
+          <table class="request-table workload-table">
+            <thead>
+              <tr>
+                <th>{{ s.t('employee') }}</th>
+                <th>{{ s.t('active') }}</th>
+                <th>{{ s.t('waitingOnCustomer') }}</th>
+                <th>{{ s.t('urgent') }}</th>
+                <th>{{ s.t('completed') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of workload; track p.id) {
+                <tr>
+                  <td>
+                    <a class="identity" routerLink="/requests" [queryParams]="{ owner: p.id }">
+                      <span class="avatar">{{ s.initials(p.full_name) }}</span>
+                      <div>
+                        <strong>{{ p.full_name }}</strong>
+                        <small>{{ s.t(p.role) }}</small>
+                      </div>
+                    </a>
+                  </td>
+                  <td>
+                    <div class="workload-bar-cell">
+                      <strong>{{ p.active }}</strong>
+                      <span class="workload-bar">
+                        <span [style.width.%]="(p.active / maxActive) * 100"></span>
+                      </span>
+                    </div>
+                  </td>
+                  <td>{{ p.waiting }}</td>
+                  <td>
+                    <span [class.urgent-number]="p.urgent > 0">{{ p.urgent }}</span>
+                  </td>
+                  <td>{{ p.resolved }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5">{{ s.t('noWorkload') }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    }
+  `,
+})
+export class OverviewComponent implements OnInit, OnDestroy {
+  readonly s = inject(AppState);
+  summary: Summary = emptySummary();
+  workload: Workload[] = [];
+  loading = true;
+  error: unknown;
+  private alive = true;
+  private busy = false;
+  private timer?: ReturnType<typeof setInterval>;
+  get maxActive() {
+    return Math.max(1, ...this.workload.map((p) => p.active));
+  }
+  ngOnInit() {
+    this.load();
+    this.timer = setInterval(() => {
+      if (!document.hidden && !this.busy) this.load();
+    }, 15000);
+  }
+  ngOnDestroy() {
+    this.alive = false;
+    clearInterval(this.timer);
+  }
+  async load() {
+    if (this.busy) return;
+    this.busy = true;
+    try {
+      const [summary, workload] = await Promise.all([this.s.api.summary(), this.s.api.workload()]);
+      if (this.alive) {
+        this.summary = summary;
+        this.workload = workload;
+        this.error = null;
+      }
+    } catch (e) {
+      if (this.alive) this.error = e;
+    } finally {
+      if (this.alive) this.loading = false;
+      this.busy = false;
+    }
+  }
 }

@@ -88,6 +88,10 @@ end
 $$;
 create trigger on_auth_user_created after insert on auth.users for each row execute function public.handle_new_user();
 
+insert into public.profiles(id, full_name, role)
+select id, left(coalesce(nullif(trim(raw_user_meta_data ->> 'full_name'), ''), split_part(email, '@', 1), 'Customer'), 100), 'customer'
+from auth.users on conflict (id) do nothing;
+
 alter table public.profiles enable row level security;
 alter table public.requests enable row level security;
 alter table public.messages enable row level security;
@@ -102,6 +106,9 @@ create policy attachments_read on public.attachments for select to authenticated
 
 revoke all on public.profiles, public.requests, public.messages, public.activities, public.attachments from anon, authenticated;
 grant select on public.profiles, public.requests, public.messages, public.activities, public.attachments to authenticated;
+grant all on public.profiles, public.requests, public.messages, public.activities, public.attachments to service_role;
+revoke all on sequence public.request_reference_seq from anon, authenticated;
+grant usage, select on sequence public.request_reference_seq to service_role;
 
 create function public.create_request(p_title text, p_description text, p_category public.request_category, p_urgency public.request_urgency)
 returns uuid language plpgsql security definer set search_path = '' as $$

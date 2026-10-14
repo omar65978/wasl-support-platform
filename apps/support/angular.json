@@ -13,15 +13,10 @@
             "outputPath": "dist",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.json",
             "baseHref": "/support/",
-            "styles": [
-              "../../packages/shared/src/styles.css",
-              "src/styles.css"
-            ],
+            "styles": ["../../packages/shared/src/styles.css", "src/styles.css"],
             "assets": [
               {
                 "glob": "**/*",

@@ -1,33 +1,288 @@
 import { PGlite } from '@electric-sql/pglite';
 import { beforeAll, afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { readFile } from 'node:fs/promises';
-const ids={customer:'11111111-1111-4111-8111-111111111111',other:'22222222-2222-4222-8222-222222222222',agent:'33333333-3333-4333-8333-333333333333',second:'44444444-4444-4444-8444-444444444444',manager:'55555555-5555-4555-8555-555555555555'};
-let db:PGlite;
-async function as(role:keyof typeof ids){await db.exec(`reset role;select set_config('request.jwt.claim.sub','${ids[role]}',false);set role authenticated;`);}
-async function create(){await as('customer');const r=await db.query<{id:string}>(`select public.create_request('Invoice will not download','The download opens a blank page in two different browsers.','billing','high') as id`);return r.rows[0].id;}
-async function claim(id:string){await as('agent');await db.query(`select public.change_request($1,1,'claim')`,[id]);}
-beforeAll(async()=>{
-  db=new PGlite();
-  await db.exec(`create role anon;create role authenticated;create schema auth;create schema storage;create table auth.users(id uuid primary key,email text,raw_user_meta_data jsonb default '{}'::jsonb);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth,storage to anon,authenticated;create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text references storage.buckets(id),name text,metadata jsonb);alter table storage.objects enable row level security;grant select,insert,delete on storage.objects to authenticated;`);
-  await db.exec(await readFile('supabase/migrations/202610140001_foundation.sql','utf8'));
+const ids = {
+  customer: '11111111-1111-4111-8111-111111111111',
+  other: '22222222-2222-4222-8222-222222222222',
+  agent: '33333333-3333-4333-8333-333333333333',
+  second: '44444444-4444-4444-8444-444444444444',
+  manager: '55555555-5555-4555-8555-555555555555',
+};
+let db: PGlite;
+async function as(role: keyof typeof ids) {
+  await db.exec(
+    `reset role;select set_config('request.jwt.claim.sub','${ids[role]}',false);set role authenticated;`,
+  );
+}
+async function create() {
+  await as('customer');
+  const r = await db.query<{ id: string }>(
+    `select public.create_request('Invoice will not download','The download opens a blank page in two different browsers.','billing','high') as id`,
+  );
+  return r.rows[0].id;
+}
+async function claim(id: string) {
+  await as('agent');
+  await db.query(`select public.change_request($1,1,'claim')`, [id]);
+}
+beforeAll(async () => {
+  db = new PGlite();
+  await db.exec(
+    `create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create schema storage;create table auth.users(id uuid primary key,email text,raw_user_meta_data jsonb default '{}'::jsonb);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth,storage to anon,authenticated;create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text references storage.buckets(id),name text,metadata jsonb);alter table storage.objects enable row level security;grant select,insert,delete on storage.objects to authenticated;`,
+  );
+  await db.exec(await readFile('supabase/migrations/202610140001_foundation.sql', 'utf8'));
 });
-afterAll(async()=>{await db?.close();});
-beforeEach(async()=>{await db.exec(`reset role;truncate public.activities,public.attachments,public.messages,public.requests,public.profiles,auth.users,storage.objects cascade;`);for(const [name,id]of Object.entries(ids)){await db.query(`insert into auth.users(id,email,raw_user_meta_data) values($1,$2,$3)`,[id,`${name}@test.local`,JSON.stringify({full_name:name,role:'manager'})]);}await db.exec(`update public.profiles set role='agent' where id in ('${ids.agent}','${ids.second}');update public.profiles set role='manager' where id='${ids.manager}';`);});
-describe('Database authorization and lifecycle using the real migration',()=>{
-  it('ignores role escalation through registration metadata',async()=>{await as('customer');const result=await db.query<{role:string}>(`select role from public.profiles where id=auth.uid()`);expect(result.rows[0].role).toBe('customer');});
-  it('isolates requests even when another customer knows the UUID',async()=>{const id=await create();await as('other');expect((await db.query(`select * from public.requests where id=$1`,[id])).rows).toHaveLength(0);await expect(db.query(`select public.send_message($1,1,'Can I access this?',false)`,[id])).rejects.toThrow('FORBIDDEN');});
-  it('prevents direct table mutations and self-promotion',async()=>{await as('customer');await expect(db.query(`update public.profiles set role='manager' where id=auth.uid()`)).rejects.toThrow('permission denied');await expect(db.query(`insert into public.requests(customer_id,title,description,category) values(auth.uid(),'Bypass test','A description that is long enough','general')`)).rejects.toThrow('permission denied');});
-  it('denies anonymous data and RPC access',async()=>{await db.exec('reset role;set role anon;');await expect(db.query('select * from public.requests')).rejects.toThrow('permission denied');await expect(db.query('select public.request_summary()')).rejects.toThrow('permission denied');});
-  it('lets an agent claim once and detects a stale concurrent claim',async()=>{const id=await create();await claim(id);await as('second');await expect(db.query(`select public.change_request($1,1,'claim')`,[id])).rejects.toThrow('CONFLICT');await expect(db.query(`select public.change_request($1,2,'claim')`,[id])).rejects.toThrow('INVALID_STATE');});
-  it('keeps internal messages and activity entirely out of customer queries',async()=>{const id=await create();await claim(id);await db.query(`select public.send_message($1,2,'Private billing diagnosis',true)`,[id]);await db.query(`select public.send_message($1,3,'We are investigating your issue',false)`,[id]);await as('customer');const messages=await db.query<{body:string}>(`select body from public.messages where request_id=$1`,[id]);expect(messages.rows).toEqual([{body:'We are investigating your issue'}]);const activity=await db.query<{action:string}>(`select action from public.activities where request_id=$1`,[id]);expect(activity.rows.map(a=>a.action)).not.toContain('internal_note');});
-  it('prevents customers from creating internal notes',async()=>{const id=await create();await expect(db.query(`select public.send_message($1,1,'Not allowed',true)`,[id])).rejects.toThrow('FORBIDDEN');});
-  it('denies manager capabilities to agents and allows manager reassignment',async()=>{const id=await create();await claim(id);await expect(db.query('select public.manager_workload()')).rejects.toThrow('FORBIDDEN');await expect(db.query(`select public.change_request($1,2,'assign',$2)`,[id,ids.second])).rejects.toThrow('FORBIDDEN');await as('manager');await db.query(`select public.change_request($1,2,'assign',$2)`,[id,ids.second]);const result=await db.query<{assigned_to:string}>(`select assigned_to from public.requests where id=$1`,[id]);expect(result.rows[0].assigned_to).toBe(ids.second);});
-  it('revokes write ownership after reassignment',async()=>{const id=await create();await claim(id);await as('manager');await db.query(`select public.change_request($1,2,'assign',$2)`,[id,ids.second]);await as('agent');await expect(db.query(`select public.send_message($1,3,'An outdated owner reply',false)`,[id])).rejects.toThrow('NOT_OWNER');});
-  it('enforces resolution, closed communication, and customer reopening',async()=>{const id=await create();await claim(id);await expect(db.query(`select public.change_request($1,2,'resolve','short')`,[id])).rejects.toThrow('RESOLUTION_REQUIRED');await db.query(`select public.change_request($1,2,'resolve','The billing service was repaired and verified.')`,[id]);await as('customer');await expect(db.query(`select public.send_message($1,3,'Another question',false)`,[id])).rejects.toThrow('REQUEST_CLOSED');await expect(db.query(`select public.reserve_attachment($1,'test.pdf','application/pdf',20,false)`,[id])).rejects.toThrow('REQUEST_CLOSED');await db.query(`select public.change_request($1,3,'reopen')`,[id]);await db.query(`select public.send_message($1,4,'The issue is happening again',false)`,[id]);const result=await db.query<{status:string;resolution:null}>(`select status,resolution from public.requests where id=$1`,[id]);expect(result.rows[0]).toEqual({status:'in_progress',resolution:null});});
-  it('moves waiting requests back to investigation after a customer reply',async()=>{const id=await create();await claim(id);await db.query(`select public.change_request($1,2,'waiting_customer')`,[id]);await as('customer');await db.query(`select public.send_message($1,3,'Here are the steps to reproduce it',false)`,[id]);expect((await db.query<{status:string}>(`select status from public.requests where id=$1`,[id])).rows[0].status).toBe('in_progress');});
-  it('returns scoped totals and server-side workload aggregates',async()=>{const id=await create();await claim(id);await as('other');expect((await db.query<{s:{total:number}}>('select public.request_summary() as s')).rows[0].s.total).toBe(0);await as('manager');const result=await db.query<{w:{id:string;active:number}[]}>('select public.manager_workload() as w');expect(result.rows[0].w.find(x=>x.id===ids.agent)?.active).toBe(1);});
-  it('validates descriptions and accepted attachment metadata at the database boundary',async()=>{await as('customer');await expect(db.query(`select public.create_request('Short','too short','general','normal')`)).rejects.toThrow('check constraint');const id=await create();await expect(db.query(`select public.reserve_attachment($1,'payload.html','text/html',10,false)`,[id])).rejects.toThrow('check constraint');await expect(db.query(`select public.reserve_attachment($1,'large.pdf','application/pdf',5242881,false)`,[id])).rejects.toThrow('check constraint');});
-  it('protects attachment records and direct storage access with the same visibility',async()=>{const id=await create();await claim(id);const a=(await db.query<{id:string;storage_path:string}>(`select * from public.reserve_attachment($1,'diagnosis.pdf','application/pdf',20,true)`,[id])).rows[0];await db.query(`insert into storage.objects(bucket_id,name,metadata) values('request-attachments',$1,'{"size":20,"mimetype":"application/pdf"}')`,[a.storage_path]);await db.query(`select public.finish_attachment($1)`,[a.id]);expect((await db.query(`select * from storage.objects where name=$1`,[a.storage_path])).rows).toHaveLength(1);await as('customer');expect((await db.query(`select * from public.attachments where id=$1`,[a.id])).rows).toHaveLength(0);expect((await db.query(`select * from storage.objects where name=$1`,[a.storage_path])).rows).toHaveLength(0);});
-  it('prevents forged upload paths and publishing mismatched metadata',async()=>{const id=await create();await expect(db.query(`insert into storage.objects(bucket_id,name) values('request-attachments','guessed/path')`)).rejects.toThrow('row-level security');const a=(await db.query<{id:string;storage_path:string}>(`select * from public.reserve_attachment($1,'invoice.pdf','application/pdf',20,false)`,[id])).rows[0];await db.query(`insert into storage.objects(bucket_id,name,metadata) values('request-attachments',$1,'{"size":21,"mimetype":"application/pdf"}')`,[a.storage_path]);await expect(db.query(`select public.finish_attachment($1)`,[a.id])).rejects.toThrow('INVALID_FILE');});
-  it('denies attachment finalization after another employee takes ownership',async()=>{const id=await create();await claim(id);const a=(await db.query<{id:string;storage_path:string}>(`select * from public.reserve_attachment($1,'invoice.pdf','application/pdf',20,false)`,[id])).rows[0];await db.query(`insert into storage.objects(bucket_id,name,metadata) values('request-attachments',$1,'{"size":20,"mimetype":"application/pdf"}')`,[a.storage_path]);await as('manager');await db.query(`select public.change_request($1,2,'assign',$2)`,[id,ids.second]);await as('agent');await expect(db.query(`select public.finish_attachment($1)`,[a.id])).rejects.toThrow('NOT_OWNER');});
+afterAll(async () => {
+  await db?.close();
+});
+beforeEach(async () => {
+  await db.exec(
+    `reset role;truncate public.activities,public.attachments,public.messages,public.requests,public.profiles,auth.users,storage.objects cascade;`,
+  );
+  for (const [name, id] of Object.entries(ids)) {
+    await db.query(`insert into auth.users(id,email,raw_user_meta_data) values($1,$2,$3)`, [
+      id,
+      `${name}@test.local`,
+      JSON.stringify({ full_name: name, role: 'manager' }),
+    ]);
+  }
+  await db.exec(
+    `update public.profiles set role='agent' where id in ('${ids.agent}','${ids.second}');update public.profiles set role='manager' where id='${ids.manager}';`,
+  );
+});
+describe('Database authorization and lifecycle using the real migration', () => {
+  it('ignores role escalation through registration metadata', async () => {
+    await as('customer');
+    const result = await db.query<{ role: string }>(
+      `select role from public.profiles where id=auth.uid()`,
+    );
+    expect(result.rows[0].role).toBe('customer');
+  });
+  it('isolates requests even when another customer knows the UUID', async () => {
+    const id = await create();
+    await as('other');
+    expect((await db.query(`select * from public.requests where id=$1`, [id])).rows).toHaveLength(
+      0,
+    );
+    await expect(
+      db.query(`select public.send_message($1,1,'Can I access this?',false)`, [id]),
+    ).rejects.toThrow('FORBIDDEN');
+  });
+  it('prevents direct table mutations and self-promotion', async () => {
+    await as('customer');
+    await expect(
+      db.query(`update public.profiles set role='manager' where id=auth.uid()`),
+    ).rejects.toThrow('permission denied');
+    await expect(
+      db.query(
+        `insert into public.requests(customer_id,title,description,category) values(auth.uid(),'Bypass test','A description that is long enough','general')`,
+      ),
+    ).rejects.toThrow('permission denied');
+  });
+  it('denies anonymous data and RPC access', async () => {
+    await db.exec('reset role;set role anon;');
+    await expect(db.query('select * from public.requests')).rejects.toThrow('permission denied');
+    await expect(db.query('select public.request_summary()')).rejects.toThrow('permission denied');
+  });
+  it('rejects a null version instead of bypassing concurrency checks', async () => {
+    const id = await create();
+    await as('agent');
+    await expect(db.query(`select public.change_request($1,null,'claim')`, [id])).rejects.toThrow(
+      'CONFLICT',
+    );
+  });
+  it('lets an agent claim once and detects a stale concurrent claim', async () => {
+    const id = await create();
+    await claim(id);
+    await as('second');
+    await expect(db.query(`select public.change_request($1,1,'claim')`, [id])).rejects.toThrow(
+      'CONFLICT',
+    );
+    await expect(db.query(`select public.change_request($1,2,'claim')`, [id])).rejects.toThrow(
+      'INVALID_STATE',
+    );
+  });
+  it('keeps internal messages and activity entirely out of customer queries', async () => {
+    const id = await create();
+    await claim(id);
+    await db.query(`select public.send_message($1,2,'Private billing diagnosis',true)`, [id]);
+    await db.query(`select public.send_message($1,3,'We are investigating your issue',false)`, [
+      id,
+    ]);
+    await as('customer');
+    const messages = await db.query<{ body: string }>(
+      `select body from public.messages where request_id=$1`,
+      [id],
+    );
+    expect(messages.rows).toEqual([{ body: 'We are investigating your issue' }]);
+    const activity = await db.query<{ action: string }>(
+      `select action from public.activities where request_id=$1`,
+      [id],
+    );
+    expect(activity.rows.map((a) => a.action)).not.toContain('internal_note');
+  });
+  it('prevents customers from creating internal notes', async () => {
+    const id = await create();
+    await expect(
+      db.query(`select public.send_message($1,1,'Not allowed',true)`, [id]),
+    ).rejects.toThrow('FORBIDDEN');
+  });
+  it('denies manager capabilities to agents and allows manager reassignment', async () => {
+    const id = await create();
+    await claim(id);
+    await expect(db.query('select public.manager_workload()')).rejects.toThrow('FORBIDDEN');
+    await expect(
+      db.query(`select public.change_request($1,2,'assign',$2)`, [id, ids.second]),
+    ).rejects.toThrow('FORBIDDEN');
+    await as('manager');
+    await db.query(`select public.change_request($1,2,'assign',$2)`, [id, ids.second]);
+    const result = await db.query<{ assigned_to: string }>(
+      `select assigned_to from public.requests where id=$1`,
+      [id],
+    );
+    expect(result.rows[0].assigned_to).toBe(ids.second);
+  });
+  it('revokes write ownership after reassignment', async () => {
+    const id = await create();
+    await claim(id);
+    await as('manager');
+    await db.query(`select public.change_request($1,2,'assign',$2)`, [id, ids.second]);
+    await as('agent');
+    await expect(
+      db.query(`select public.send_message($1,3,'An outdated owner reply',false)`, [id]),
+    ).rejects.toThrow('NOT_OWNER');
+  });
+  it('enforces resolution, closed communication, and customer reopening', async () => {
+    const id = await create();
+    await claim(id);
+    await expect(
+      db.query(`select public.change_request($1,2,'resolve','short')`, [id]),
+    ).rejects.toThrow('RESOLUTION_REQUIRED');
+    await db.query(
+      `select public.change_request($1,2,'resolve','The billing service was repaired and verified.')`,
+      [id],
+    );
+    await as('customer');
+    await expect(
+      db.query(`select public.send_message($1,3,'Another question',false)`, [id]),
+    ).rejects.toThrow('REQUEST_CLOSED');
+    await expect(
+      db.query(`select public.reserve_attachment($1,'test.pdf','application/pdf',20,false)`, [id]),
+    ).rejects.toThrow('REQUEST_CLOSED');
+    await db.query(`select public.change_request($1,3,'reopen')`, [id]);
+    await db.query(`select public.send_message($1,4,'The issue is happening again',false)`, [id]);
+    const result = await db.query<{ status: string; resolution: null }>(
+      `select status,resolution from public.requests where id=$1`,
+      [id],
+    );
+    expect(result.rows[0]).toEqual({ status: 'in_progress', resolution: null });
+  });
+  it('moves waiting requests back to investigation after a customer reply', async () => {
+    const id = await create();
+    await claim(id);
+    await db.query(`select public.change_request($1,2,'waiting_customer')`, [id]);
+    await as('customer');
+    await db.query(`select public.send_message($1,3,'Here are the steps to reproduce it',false)`, [
+      id,
+    ]);
+    expect(
+      (await db.query<{ status: string }>(`select status from public.requests where id=$1`, [id]))
+        .rows[0].status,
+    ).toBe('in_progress');
+  });
+  it('returns scoped totals and server-side workload aggregates', async () => {
+    const id = await create();
+    await claim(id);
+    await as('other');
+    expect(
+      (await db.query<{ s: { total: number } }>('select public.request_summary() as s')).rows[0].s
+        .total,
+    ).toBe(0);
+    await as('manager');
+    const result = await db.query<{ w: { id: string; active: number }[] }>(
+      'select public.manager_workload() as w',
+    );
+    expect(result.rows[0].w.find((x) => x.id === ids.agent)?.active).toBe(1);
+  });
+  it('validates descriptions and accepted attachment metadata at the database boundary', async () => {
+    await as('customer');
+    await expect(
+      db.query(`select public.create_request('Short','too short','general','normal')`),
+    ).rejects.toThrow('check constraint');
+    const id = await create();
+    await expect(
+      db.query(`select public.reserve_attachment($1,'payload.html','text/html',10,false)`, [id]),
+    ).rejects.toThrow('check constraint');
+    await expect(
+      db.query(`select public.reserve_attachment($1,'large.pdf','application/pdf',5242881,false)`, [
+        id,
+      ]),
+    ).rejects.toThrow('check constraint');
+  });
+  it('protects attachment records and direct storage access with the same visibility', async () => {
+    const id = await create();
+    await claim(id);
+    const a = (
+      await db.query<{ id: string; storage_path: string }>(
+        `select * from public.reserve_attachment($1,'diagnosis.pdf','application/pdf',20,true)`,
+        [id],
+      )
+    ).rows[0];
+    await db.query(
+      `insert into storage.objects(bucket_id,name,metadata) values('request-attachments',$1,'{"size":20,"mimetype":"application/pdf"}')`,
+      [a.storage_path],
+    );
+    await db.query(`select public.finish_attachment($1)`, [a.id]);
+    expect(
+      (await db.query(`select * from storage.objects where name=$1`, [a.storage_path])).rows,
+    ).toHaveLength(1);
+    await as('customer');
+    expect(
+      (await db.query(`select * from public.attachments where id=$1`, [a.id])).rows,
+    ).toHaveLength(0);
+    expect(
+      (await db.query(`select * from storage.objects where name=$1`, [a.storage_path])).rows,
+    ).toHaveLength(0);
+  });
+  it('prevents forged upload paths and publishing mismatched metadata', async () => {
+    const id = await create();
+    await expect(
+      db.query(
+        `insert into storage.objects(bucket_id,name) values('request-attachments','guessed/path')`,
+      ),
+    ).rejects.toThrow('row-level security');
+    const a = (
+      await db.query<{ id: string; storage_path: string }>(
+        `select * from public.reserve_attachment($1,'invoice.pdf','application/pdf',20,false)`,
+        [id],
+      )
+    ).rows[0];
+    await db.query(
+      `insert into storage.objects(bucket_id,name,metadata) values('request-attachments',$1,'{"size":21,"mimetype":"application/pdf"}')`,
+      [a.storage_path],
+    );
+    await expect(db.query(`select public.finish_attachment($1)`, [a.id])).rejects.toThrow(
+      'INVALID_FILE',
+    );
+  });
+  it('denies attachment finalization after another employee takes ownership', async () => {
+    const id = await create();
+    await claim(id);
+    const a = (
+      await db.query<{ id: string; storage_path: string }>(
+        `select * from public.reserve_attachment($1,'invoice.pdf','application/pdf',20,false)`,
+        [id],
+      )
+    ).rows[0];
+    await db.query(
+      `insert into storage.objects(bucket_id,name,metadata) values('request-attachments',$1,'{"size":20,"mimetype":"application/pdf"}')`,
+      [a.storage_path],
+    );
+    await as('manager');
+    await db.query(`select public.change_request($1,2,'assign',$2)`, [id, ids.second]);
+    await as('agent');
+    await expect(db.query(`select public.finish_attachment($1)`, [a.id])).rejects.toThrow(
+      'NOT_OWNER',
+    );
+  });
 });

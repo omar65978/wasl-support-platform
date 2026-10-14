@@ -3,10 +3,121 @@ import { FormsModule } from '@angular/forms';
 import { applicationUrl } from '@wasl/shared';
 import { AppState } from './state';
 import { IconComponent } from './icon.component';
-@Component({ selector:'app-auth', standalone:true, imports:[FormsModule,IconComponent], template:`
-<main class="auth-page"><section class="auth-story"><span class="brand brand-light"><span class="brand-symbol"></span>{{s.t('brand')}}</span><div class="auth-story-content"><h1>{{s.t('staffLoginTitle')}}</h1><p>{{s.t('staffLoginBody')}}</p><div class="auth-illustration"><div class="thread-line"><span class="thread-node"><app-icon name="inbox" [size]="14"/></span>{{s.t('allRequests')}}</div><div class="thread-line"><span class="thread-node"><app-icon name="users" [size]="14"/></span>{{s.t('heroOwnership')}}</div><div class="thread-line"><span class="thread-node done"><app-icon name="check" [size]="14"/></span>{{s.t('heroResolution')}}</div></div></div><div class="auth-story-bottom"><app-icon name="lock" [size]="14"/>{{s.t('securityNote')}}</div></section><section class="auth-main"><button class="btn btn-quiet auth-language" (click)="s.toggleLanguage()" [attr.aria-label]="s.t('switchLanguage')"><app-icon name="globe" [size]="16"/>{{s.t('language')}}</button><div class="auth-form"><h2>{{s.t('loginTitle')}}</h2><p>{{s.t('supportWorkspace')}}</p>@if(error){<div class="alert alert-error" role="alert">{{s.error(error)}}</div>}<form (ngSubmit)="signIn()"><div class="field"><label for="email">{{s.t('email')}}</label><input id="email" name="email" type="email" dir="ltr" autocomplete="email" [(ngModel)]="email" required placeholder="you@company.com"/></div><div class="field"><label for="password">{{s.t('password')}}</label><input id="password" name="password" type="password" autocomplete="current-password" [(ngModel)]="password" required/></div><button class="btn btn-primary" [disabled]="busy || !email || !password">{{s.t(busy?'signInPending':'signIn')}}</button></form><p class="auth-footer">{{s.t('forgotHint')}}</p><div class="demo-options"><p>{{s.t('demo')}}</p><div class="flex"><button class="btn btn-secondary" (click)="s.auth.enterDemo('agent')">{{s.t('demoAgent')}}</button><button class="btn btn-secondary" (click)="s.auth.enterDemo('manager')">{{s.t('demoManager')}}</button></div></div><a class="auth-workspace-link" [href]="customerUrl">{{s.t('customerPortal')}} ↗</a></div></section></main>
-` })
+@Component({
+  selector: 'app-auth',
+  standalone: true,
+  imports: [FormsModule, IconComponent],
+  template: `
+    <main class="auth-page">
+      <section class="auth-story">
+        <span class="brand brand-light">
+          <span class="brand-symbol"></span>
+          {{ s.t('brand') }}
+        </span>
+        <div class="auth-story-content">
+          <h1>{{ s.t('staffLoginTitle') }}</h1>
+          <p>{{ s.t('staffLoginBody') }}</p>
+          <div class="auth-illustration">
+            <div class="thread-line">
+              <span class="thread-node"><app-icon name="inbox" [size]="14" /></span>
+              {{ s.t('allRequests') }}
+            </div>
+            <div class="thread-line">
+              <span class="thread-node"><app-icon name="users" [size]="14" /></span>
+              {{ s.t('heroOwnership') }}
+            </div>
+            <div class="thread-line">
+              <span class="thread-node done"><app-icon name="check" [size]="14" /></span>
+              {{ s.t('heroResolution') }}
+            </div>
+          </div>
+        </div>
+        <div class="auth-story-bottom">
+          <app-icon name="lock" [size]="14" />
+          {{ s.t('securityNote') }}
+        </div>
+      </section>
+      <section class="auth-main">
+        <button
+          class="btn btn-quiet auth-language"
+          (click)="s.toggleLanguage()"
+          [attr.aria-label]="s.t('switchLanguage')"
+        >
+          <app-icon name="globe" [size]="16" />
+          {{ s.t('language') }}
+        </button>
+        <div class="auth-form">
+          <h2>{{ s.t('loginTitle') }}</h2>
+          <p>{{ s.t('supportWorkspace') }}</p>
+          @if (error || s.session().error) {
+            <div class="alert alert-error" role="alert">
+              {{ s.error(error || s.session().error) }}
+            </div>
+          }
+          <form (ngSubmit)="signIn()">
+            <div class="field">
+              <label for="email">{{ s.t('email') }}</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                dir="ltr"
+                autocomplete="email"
+                [(ngModel)]="email"
+                required
+                placeholder="you@company.com"
+              />
+            </div>
+            <div class="field">
+              <label for="password">{{ s.t('password') }}</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                [(ngModel)]="password"
+                required
+              />
+            </div>
+            <button class="btn btn-primary" [disabled]="busy || !email || !password">
+              {{ s.t(busy ? 'signInPending' : 'signIn') }}
+            </button>
+          </form>
+          <p class="auth-footer">{{ s.t('forgotHint') }}</p>
+          <div class="demo-options">
+            <p>{{ s.t('demo') }}</p>
+            <div class="flex">
+              <button class="btn btn-secondary" (click)="s.auth.enterDemo('agent')">
+                {{ s.t('demoAgent') }}
+              </button>
+              <button class="btn btn-secondary" (click)="s.auth.enterDemo('manager')">
+                {{ s.t('demoManager') }}
+              </button>
+            </div>
+          </div>
+          <a class="auth-workspace-link" [href]="customerUrl">{{ s.t('customerPortal') }} ↗</a>
+        </div>
+      </section>
+    </main>
+  `,
+})
 export class AuthComponent {
-  readonly s = inject(AppState); readonly customerUrl = applicationUrl('customer'); email = ''; password = ''; busy = false; error: unknown;
-  async signIn() { if(this.busy)return;this.busy=true;this.error=null;try{await this.s.auth.signIn(this.email,this.password);}catch(e){this.error=e;}finally{this.busy=false;} }
+  readonly s = inject(AppState);
+  readonly customerUrl = applicationUrl('customer');
+  email = '';
+  password = '';
+  busy = false;
+  error: unknown;
+  async signIn() {
+    if (this.busy) return;
+    this.busy = true;
+    this.error = null;
+    try {
+      await this.s.auth.signIn(this.email, this.password);
+    } catch (e) {
+      this.error = e;
+    } finally {
+      this.busy = false;
+    }
+  }
 }
