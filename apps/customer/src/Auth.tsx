@@ -25,6 +25,13 @@ export function AuthPage() {
   const { t, toggleLanguage, notify } = useApp();
   const session = useAuth();
   const [register, setRegister] = useState(false);
+  const [forgot, setForgot] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [confirmation, setConfirmation] = useState('');
+  const recovering = session.recovery !== 'none';
+  const resetting = session.recovery === 'ready';
+  const requesting = forgot || session.recovery === 'invalid';
+  const completed = session.recovery === 'complete';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -33,14 +40,41 @@ export function AuthPage() {
   const [error, setError] = useState<unknown>(null);
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (busy || (requesting && sent)) return;
     setBusy(true);
     setError(null);
     try {
-      if (register) {
+      if (requesting) {
+        await auth.requestPasswordReset(email);
+        setSent(true);
+      } else if (resetting) {
+        await auth.updatePassword(password, confirmation);
+        setPassword('');
+        setConfirmation('');
+      } else if (register) {
         await auth.register(name, email, password);
         notify('registered');
         setRegister(false);
       } else await auth.signIn(email, password);
+    } catch (e) {
+      setError(e);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function backToSignIn() {
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      if (recovering) await auth.leaveRecovery();
+      else {
+        setForgot(false);
+        setRegister(false);
+        setSent(false);
+        setPassword('');
+        setConfirmation('');
+      }
     } catch (e) {
       setError(e);
     } finally {
@@ -93,88 +127,195 @@ export function AuthPage() {
           </button>
         </div>
         <div className="auth-form">
-          <h2>{t(register ? 'register' : 'loginTitle')}</h2>
-          <p>{t('loginBody')}</p>
-          <ErrorNotice error={error || session.error} />
-          <form onSubmit={submit}>
-            {register && (
-              <div className="field">
-                <label htmlFor="name">{t('name')}</label>
-                <input
-                  id="name"
-                  autoComplete="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  maxLength={100}
-                />
-              </div>
+          <h2>
+            {t(
+              completed
+                ? 'passwordUpdated'
+                : resetting
+                  ? 'resetTitle'
+                  : requesting
+                    ? 'forgotTitle'
+                    : register
+                      ? 'register'
+                      : 'loginTitle',
             )}
-            <div className="field">
-              <label htmlFor="email">{t('email')}</label>
-              <input
-                id="email"
-                type="email"
-                dir="ltr"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder="you@company.com"
-              />
+          </h2>
+          <p>
+            {t(
+              completed
+                ? 'passwordUpdatedBody'
+                : resetting
+                  ? 'resetBody'
+                  : requesting
+                    ? 'forgotBody'
+                    : 'loginBody',
+            )}
+          </p>
+          {session.recovery === 'invalid' && (
+            <div className="alert alert-error" role="alert">
+              {t('recoveryInvalid')}
             </div>
-            <div className="field">
-              <label htmlFor="password">{t('password')}</label>
-              <div className="password-wrap">
-                <input
-                  id="password"
-                  type={show ? 'text' : 'password'}
-                  autoComplete={register ? 'new-password' : 'current-password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  minLength={register ? 12 : undefined}
-                  required
-                />
+          )}
+          <ErrorNotice error={error || (!recovering && session.error)} />
+          {sent && (
+            <div className="alert alert-success" role="status">
+              {t('resetEmailSent')}
+            </div>
+          )}
+          {!completed && (
+            <form onSubmit={submit}>
+              {register && !requesting && !resetting && (
+                <div className="field">
+                  <label htmlFor="name">{t('name')}</label>
+                  <input
+                    id="name"
+                    autoComplete="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    maxLength={100}
+                  />
+                </div>
+              )}
+              {!resetting && (
+                <div className="field">
+                  <label htmlFor="email">{t('email')}</label>
+                  <input
+                    id="email"
+                    type="email"
+                    dir="ltr"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setSent(false);
+                    }}
+                    required
+                    placeholder="you@company.com"
+                    disabled={busy}
+                  />
+                </div>
+              )}
+              {!requesting && (
+                <div className="field">
+                  <label htmlFor="password">{t(resetting ? 'newPassword' : 'password')}</label>
+                  <div className="password-wrap">
+                    <input
+                      id="password"
+                      type={show ? 'text' : 'password'}
+                      autoComplete={register || resetting ? 'new-password' : 'current-password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      minLength={register || resetting ? 12 : undefined}
+                      required
+                      disabled={busy}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShow(!show)}
+                      aria-label={t(show ? 'hidePassword' : 'showPassword')}
+                    >
+                      {show ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  {(register || resetting) && <small>{t('passwordHelp')}</small>}
+                </div>
+              )}
+              {resetting && (
+                <div className="field">
+                  <label htmlFor="confirmation">{t('confirmPassword')}</label>
+                  <input
+                    id="confirmation"
+                    type={show ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    value={confirmation}
+                    onChange={(e) => setConfirmation(e.target.value)}
+                    minLength={12}
+                    required
+                    disabled={busy}
+                  />
+                </div>
+              )}
+              <button className="btn btn-primary" disabled={busy || (requesting && sent)}>
+                {t(
+                  requesting
+                    ? busy
+                      ? 'sendingReset'
+                      : 'sendResetLink'
+                    : resetting
+                      ? busy
+                        ? 'savingPassword'
+                        : 'savePassword'
+                      : busy
+                        ? 'signInPending'
+                        : register
+                          ? 'register'
+                          : 'signIn',
+                )}
+              </button>
+            </form>
+          )}
+          {!register && !requesting && !recovering && (
+            <div className="auth-footer">
+              <button
+                className="text-link"
+                disabled={busy}
+                onClick={() => {
+                  setForgot(true);
+                  setError(null);
+                  setPassword('');
+                  setShow(false);
+                }}
+              >
+                {t('forgotPassword')}
+              </button>
+            </div>
+          )}
+          {requesting || recovering ? (
+            <div className="auth-footer">
+              <button
+                className={completed ? 'btn btn-primary' : 'text-link'}
+                disabled={busy}
+                onClick={backToSignIn}
+              >
+                {t('backSignIn')}
+              </button>
+            </div>
+          ) : (
+            <div className="auth-footer">
+              {t(register ? 'haveAccount' : 'needAccount')}{' '}
+              <button
+                className="text-link"
+                disabled={busy}
+                onClick={() => {
+                  setRegister(!register);
+                  setError(null);
+                  setPassword('');
+                  setShow(false);
+                }}
+              >
+                {t(register ? 'signIn' : 'register')}
+              </button>
+            </div>
+          )}
+          {!requesting && !recovering && (
+            <>
+              <div className="demo-options">
+                <p>{t('demo')}</p>
                 <button
-                  type="button"
-                  onClick={() => setShow(!show)}
-                  aria-label={t(show ? 'hidePassword' : 'showPassword')}
+                  className="btn btn-secondary"
+                  style={{ width: '100%' }}
+                  onClick={() => auth.enterDemo('customer')}
                 >
-                  {show ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {t('demoCustomer')}
+                  <ArrowUpRight size={14} />
                 </button>
               </div>
-              {register && <small>{t('passwordHelp')}</small>}
-            </div>
-            <button className="btn btn-primary" disabled={busy}>
-              {t(busy ? 'signInPending' : register ? 'register' : 'signIn')}
-            </button>
-          </form>
-          <div className="auth-footer">
-            {t(register ? 'haveAccount' : 'needAccount')}{' '}
-            <button
-              className="text-link"
-              onClick={() => {
-                setRegister(!register);
-                setError(null);
-              }}
-            >
-              {t(register ? 'signIn' : 'register')}
-            </button>
-          </div>
-          <div className="demo-options">
-            <p>{t('demo')}</p>
-            <button
-              className="btn btn-secondary"
-              style={{ width: '100%' }}
-              onClick={() => auth.enterDemo('customer')}
-            >
-              {t('demoCustomer')}
-              <ArrowUpRight size={14} />
-            </button>
-          </div>
-          <a className="auth-workspace-link" href={applicationUrl('support')}>
-            {t('supportWorkspace')} ↗
-          </a>
+              <a className="auth-workspace-link" href={applicationUrl('support')}>
+                {t('supportWorkspace')} ↗
+              </a>
+            </>
+          )}
         </div>
       </section>
     </main>

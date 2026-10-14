@@ -6,10 +6,10 @@
     </span>
     <div class="loading" role="status">
       <span class="spinner"></span>
-      {{ s.t('loginPending') }}
+      {{ s.t(s.session().recovery === 'verifying' ? 'checkingRecovery' : 'loginPending') }}
     </div>
   </div>
-} @else if (!s.session().profile) {
+} @else if (s.session().recovery !== 'none' || !s.session().profile) {
   <app-auth />
 } @else if (s.session().profile?.role === 'customer') {
   <div class="full-center">

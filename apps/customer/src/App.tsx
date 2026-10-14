@@ -10,7 +10,7 @@ import { CreateRequest } from './CreateRequest';
 import { RequestDetail } from './RequestDetail';
 function Shell() {
   const { t, toggleLanguage } = useApp();
-  const { profile, loading, demo, error } = useAuth();
+  const { profile, loading, demo, error, recovery } = useAuth();
   const [logoutError, setLogoutError] = useState<unknown>(null);
   async function signOut() {
     try {
@@ -24,10 +24,10 @@ function Shell() {
       <div className="full-center">
         <Brand />
         <Loading />
-        <p>{t('loginPending')}</p>
+        <p>{t(recovery === 'verifying' ? 'checkingRecovery' : 'loginPending')}</p>
       </div>
     );
-  if (!profile) return <AuthPage />;
+  if (recovery !== 'none' || !profile) return <AuthPage />;
   if (profile.role !== 'customer')
     return (
       <div className="full-center">

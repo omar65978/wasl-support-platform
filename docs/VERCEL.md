@@ -100,3 +100,14 @@ Registration sends `emailRedirectTo` using the actual customer application origi
 | Preview toolbar is blocked                | The deployment CSP intentionally does not allow third-party injected scripts    |
 
 The Vercel build and generated static assets are validated locally. An actual hosted Vercel deployment still requires your account and repository connection.
+
+## Password recovery redirects
+
+Both applications now include password recovery. In addition to the base application URLs, allow the exact `?auth=recovery` callbacks for the deployed origin. For the current production domain:
+
+```text
+https://wasl-support-platform-v2.vercel.app/customer/?auth=recovery
+https://wasl-support-platform-v2.vercel.app/support/?auth=recovery
+```
+
+Keep the Reset Password email template linked to `{{ .ConfirmationURL }}`. See [Password recovery](PASSWORD-RECOVERY.md) for the live checklist, mail troubleshooting, and callback behavior. Do not rerun database setup for this update.

@@ -10,6 +10,7 @@ function allowRoles(roles: Role[]): CanActivateFn {
     const s = inject(AppState);
     const router = inject(Router);
     const evaluate = () => {
+      if (s.auth.getSnapshot().recovery !== 'none') return router.createUrlTree(['/sign-in']);
       const profile = s.auth.getSnapshot().profile;
       if (!profile || profile.role === 'customer') return router.createUrlTree(['/sign-in']);
       return roles.includes(profile.role) || router.createUrlTree(['/requests']);

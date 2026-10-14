@@ -69,3 +69,11 @@ A public Auth endpoint returning HTTP 200 validates the project URL/public key, 
 7. Review the operational limits in README before a production launch.
 
 Screenshots are captured from the explicitly labeled local demo, not from real customer data. Automated accessibility tests are evidence for the tested pages only, not a full accessibility certification.
+
+## Password recovery and demo-copy update — 2026-10-14
+
+The update based on commit `ea7d25df9f9a748fcd0bae78dff98d8e8ec3cb68` passed 52 SQL/unit/configuration tests and all 29 Chromium browser tests on Node.js 22.23.3. The combined Vercel build passed. This supersedes the earlier 34/16 test counts for the updated source.
+
+New coverage includes callback credential removal before hash routing; rejection of missing, wrong-type, and expired recovery links; recovery independent of missing profiles and demo sessions; neutral reset-request confirmation; rate limits; minimum password length and confirmation; a successful password update and global sign-out request; and Arabic/mobile/dark-mode screens with representative automated accessibility checks. Both applications display the exact revised demo notice in English and Arabic.
+
+Recovery browser tests mock the Supabase Auth endpoints with synthetic credentials. No actual reset emails were sent, no hosted passwords or profiles were changed, and no live deployment or dashboard settings were modified by this verification. Hosted delivery and end-to-end recovery with the owner’s real account remain owner verification steps. See [Password recovery](PASSWORD-RECOVERY.md).

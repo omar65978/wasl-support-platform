@@ -1,5 +1,34 @@
 import type { Language } from './types';
 export const en = {
+  forgotPassword: 'Forgot password?',
+  forgotTitle: 'Let’s get you back in.',
+  forgotBody: 'Enter your account email and we’ll send a secure password reset link.',
+  sendResetLink: 'Send reset link',
+  sendingReset: 'Sending link…',
+  resetEmailSent:
+    'If an account exists for this email, a password reset link will be sent. Check your inbox and spam folder. Wait a little before requesting another link.',
+  resetTitle: 'Choose a new password.',
+  resetBody: 'Use at least 12 characters and choose a password you do not use elsewhere.',
+  newPassword: 'New password',
+  confirmPassword: 'Confirm new password',
+  savePassword: 'Save new password',
+  savingPassword: 'Saving password…',
+  passwordUpdated: 'Password updated.',
+  passwordUpdatedBody: 'Your new password has been saved. Continue to sign in with it.',
+  checkingRecovery: 'Checking your reset link…',
+  recoveryInvalid:
+    'This reset link is invalid, expired, or no longer available. Request a new link below and use the most recent email.',
+  errorPasswordMismatch: 'The passwords do not match.',
+  errorSamePassword: 'Choose a password different from your current password.',
+  errorWeakPassword:
+    'This password does not meet the account security requirements. Choose a stronger password.',
+  errorEmail: 'Enter a valid email address.',
+  errorEmailDelivery:
+    'The reset email could not be sent. Try again later or contact your administrator.',
+  errorRecoverySignout:
+    'We could not finish signing out. Please try the sign-in button again before continuing.',
+  errorProfileMissing:
+    'Your login account exists, but its application profile is missing. Ask your administrator to restore it; do not register again.',
   lightMode: 'Light mode',
   darkMode: 'Dark mode',
   switchToLight: 'Switch to light mode',
@@ -35,7 +64,7 @@ export const en = {
   signInPending: 'Signing in…',
   forgotHint: 'Need access? Contact your support administrator.',
   demo: 'Explore the demo',
-  demoNotice: 'Demo workspace. Sample data stays in this browser; nothing is sent to Supabase.',
+  demoNotice: 'Demo workspace. Sample data stays in this browser; nothing is sent to the database.',
   demoCustomer: 'Try as a customer',
   demoAgent: 'Try as an agent',
   demoManager: 'Try as a manager',
@@ -251,6 +280,32 @@ export const en = {
 };
 export type TranslationKey = keyof typeof en;
 export const ar: Record<TranslationKey, string> = {
+  forgotPassword: 'نسيت كلمة المرور؟',
+  forgotTitle: 'لنساعدك على العودة.',
+  forgotBody: 'أدخل بريد حسابك لنرسل إليك رابطًا آمنًا لتعيين كلمة مرور جديدة.',
+  sendResetLink: 'إرسال رابط الاستعادة',
+  sendingReset: 'جارٍ إرسال الرابط…',
+  resetEmailSent:
+    'إذا كان هناك حساب بهذا البريد، فستصلك رسالة لاستعادة كلمة المرور. تحقّق من الوارد والبريد غير المرغوب فيه، وانتظر قليلًا قبل طلب رابط آخر.',
+  resetTitle: 'اختر كلمة مرور جديدة.',
+  resetBody: 'استخدم ١٢ حرفًا على الأقل، واختر كلمة مرور لا تستخدمها في مكان آخر.',
+  newPassword: 'كلمة المرور الجديدة',
+  confirmPassword: 'تأكيد كلمة المرور الجديدة',
+  savePassword: 'حفظ كلمة المرور الجديدة',
+  savingPassword: 'جارٍ حفظ كلمة المرور…',
+  passwordUpdated: 'تم تحديث كلمة المرور.',
+  passwordUpdatedBody: 'حُفظت كلمة مرورك الجديدة. تابع لتسجيل الدخول باستخدامها.',
+  checkingRecovery: 'جارٍ التحقق من رابط الاستعادة…',
+  recoveryInvalid:
+    'رابط الاستعادة غير صالح أو منتهي الصلاحية أو لم يعد متاحًا. اطلب رابطًا جديدًا أدناه واستخدم أحدث رسالة.',
+  errorPasswordMismatch: 'كلمتا المرور غير متطابقتين.',
+  errorSamePassword: 'اختر كلمة مرور مختلفة عن كلمة المرور الحالية.',
+  errorWeakPassword: 'كلمة المرور لا تستوفي متطلبات أمان الحساب. اختر كلمة مرور أقوى.',
+  errorEmail: 'أدخل عنوان بريد إلكتروني صالحًا.',
+  errorEmailDelivery: 'تعذّر إرسال رسالة الاستعادة. حاول لاحقًا أو تواصل مع مسؤول النظام.',
+  errorRecoverySignout: 'تعذّر إكمال تسجيل الخروج. أعد الضغط على زر تسجيل الدخول قبل المتابعة.',
+  errorProfileMissing:
+    'حساب تسجيل الدخول موجود، لكن ملفه داخل التطبيق مفقود. اطلب من المسؤول استعادته، ولا تُعِد إنشاء الحساب.',
   lightMode: 'الوضع الفاتح',
   darkMode: 'الوضع الداكن',
   switchToLight: 'التبديل إلى الوضع الفاتح',
@@ -285,7 +340,7 @@ export const ar: Record<TranslationKey, string> = {
   signInPending: 'جارٍ تسجيل الدخول…',
   forgotHint: 'تحتاج إلى صلاحية دخول؟ تواصل مع مسؤول الدعم.',
   demo: 'استكشف النسخة التجريبية',
-  demoNotice: 'مساحة تجريبية. تُحفظ البيانات في هذا المتصفح فقط ولا تُرسل إلى Supabase.',
+  demoNotice: 'مساحة تجريبية. تُحفظ البيانات في هذا المتصفح فقط ولا تُرسل إلى قاعدة البيانات.',
   demoCustomer: 'جرّب كعميل',
   demoAgent: 'جرّب كموظف',
   demoManager: 'جرّب كمدير',
@@ -537,7 +592,22 @@ export function activityKey(action: string): TranslationKey {
 export function errorKey(error: unknown): TranslationKey {
   const e = error as { message?: string; code?: string; status?: number };
   const message = e?.message || String(error);
+  if (e?.code === 'same_password') return 'errorSamePassword';
+  if (e?.code === 'weak_password') return 'errorWeakPassword';
+  if (
+    e?.code === 'email_address_invalid' ||
+    (e?.code === 'validation_failed' && message.toLowerCase().includes('email'))
+  )
+    return 'errorEmail';
+  if (e?.code === 'over_email_send_rate_limit' || e?.code === 'over_request_rate_limit')
+    return 'errorRate';
+  if (message.toLowerCase().includes('error sending recovery email')) return 'errorEmailDelivery';
   const pairs: [string, TranslationKey][] = [
+    ['RECOVERY_SIGNOUT_FAILED', 'errorRecoverySignout'],
+    ['RECOVERY_INVALID', 'recoveryInvalid'],
+    ['PASSWORD_MISMATCH', 'errorPasswordMismatch'],
+    ['INVALID_EMAIL', 'errorEmail'],
+    ['PROFILE_MISSING', 'errorProfileMissing'],
     ['CONFLICT', 'errorConflict'],
     ['FORBIDDEN', 'errorForbidden'],
     ['NOT_OWNER', 'errorOwner'],

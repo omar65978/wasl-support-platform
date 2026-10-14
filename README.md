@@ -6,7 +6,7 @@ A bilingual customer support platform that connects customers, support agents, a
 
 [![Verify platform](https://github.com/omar65978/wasl-support-platform-v2/actions/workflows/verify.yml/badge.svg)](https://github.com/omar65978/wasl-support-platform-v2/actions/workflows/verify.yml)
 
-[Customer portal](https://wasl-support-platform-nine.vercel.app/customer/) · [Support workspace](https://wasl-support-platform-nine.vercel.app/support/) · [Setup guide](docs/BACKEND.md) · [Architecture](docs/ARCHITECTURE.md)
+[Customer portal](https://wasl-support-platform-v2.vercel.app/customer/) · [Support workspace](https://wasl-support-platform-v2.vercel.app/support/) · [Setup guide](docs/BACKEND.md) · [Architecture](docs/ARCHITECTURE.md)
 
 ## Overview
 
@@ -32,10 +32,10 @@ Screenshots use sample data. Additional [screenshots](docs/screenshots) include 
 
 ## Try the applications
 
-| Application       | Link                                                                     | Intended users      |
-| ----------------- | ------------------------------------------------------------------------ | ------------------- |
-| Customer portal   | [Open portal](https://wasl-support-platform-nine.vercel.app/customer/)   | Customers           |
-| Support workspace | [Open workspace](https://wasl-support-platform-nine.vercel.app/support/) | Agents and managers |
+| Application       | Link                                                                   | Intended users      |
+| ----------------- | ---------------------------------------------------------------------- | ------------------- |
+| Customer portal   | [Open portal](https://wasl-support-platform-v2.vercel.app/customer/)   | Customers           |
+| Support workspace | [Open workspace](https://wasl-support-platform-v2.vercel.app/support/) | Agents and managers |
 
 **Demo access** uses browser-local sample data and is clearly labeled. It requires no account, does not write to Supabase, and does not support attachments. Use the two applications on the same origin and browser to explore the shared demo workflow.
 
@@ -46,6 +46,7 @@ Screenshots use sample data. Additional [screenshots](docs/screenshots) include 
 ### For customers
 
 - Register and sign in using email and password.
+- Recover account access through a secure email link and a bilingual password-reset screen.
 - Submit a request with a description, category, and urgency.
 - Search and filter their own requests.
 - Follow progress and exchange messages with the support team.
@@ -70,6 +71,7 @@ Screenshots use sample data. Additional [screenshots](docs/screenshots) include 
 ### Across both applications
 
 - Shared user, role, and request models.
+- Password recovery from either sign-in screen, with expired-link handling and password confirmation.
 - Loading, empty, validation, success, and error states.
 - Preserved message drafts when an update is rejected.
 - Version checks that prevent stale updates from silently overwriting newer changes.
@@ -202,6 +204,12 @@ For a fresh, unconfigured project, follow [BACKEND.md](docs/BACKEND.md). It cove
 
 Staff accounts are administrator-managed. Public registration always creates a customer; user-editable metadata cannot grant an agent or manager role.
 
+## Password recovery
+
+Both sign-in screens include **Forgot password?**. The email flow opens a localized reset screen, validates matching passwords, handles unusable links, and returns the user to sign-in. Recovery does not require a profile row, but application access still does.
+
+Before using it on a deployed instance, configure the exact recovery redirect URLs and verify the email template. See [Password recovery setup and verification](docs/PASSWORD-RECOVERY.md). No database migration is required.
+
 ## Attachments and data protection
 
 - Accepted types: **PDF, PNG, and JPEG**.
@@ -242,7 +250,7 @@ npm run verify
 npm audit
 ```
 
-The recorded version 1.1 verification includes **34 SQL/unit/configuration tests and 16 browser tests**. The workflow badge reports the latest GitHub Actions result. These counts are not a claim of complete coverage or accessibility certification.
+The latest recorded verification includes **52 SQL/unit/configuration tests and 29 browser tests**. Recovery browser tests use mocked Auth responses; hosted email delivery and live password changes require separate owner verification. The workflow badge reports the latest GitHub Actions result. These counts are not a claim of complete coverage or accessibility certification.
 
 ### Hosted integration
 
@@ -280,7 +288,7 @@ Use your complete project URL, such as `https://YOUR_PROJECT_REF.supabase.co`, *
 After deployment:
 
 1. Set Supabase **Site URL** to the deployed customer portal URL.
-2. Add the exact `/customer/` and `/support/` URLs to **Redirect URLs**.
+2. Add the exact `/customer/` and `/support/` URLs to **Redirect URLs**, plus both URLs with `?auth=recovery` for password recovery. See [Password recovery](docs/PASSWORD-RECOVERY.md) for the exact production values and email-template requirements.
 3. Verify registration confirmation, sign-in, requests, and protected attachments.
 
 Both applications share the deployed origin. The root redirects to `/customer/`, and hash-based application routes support direct links and refreshes without application-specific server rewrites.
@@ -333,7 +341,7 @@ vercel.json                 Combined static deployment configuration
 - The staff selector supports up to 1,000 employees.
 - Interrupted uploads can leave unfinished reservations or objects requiring administrator cleanup.
 - Production file intake may require server-side content inspection, quarantine, and malware scanning.
-- Email notifications, password-reset UI, offline writes, saved filters, and satisfaction ratings are not implemented.
+- Request-update email notifications, offline writes, saved filters, and satisfaction ratings are not implemented. Authentication email delivery depends on the configured mail service.
 - SMTP, backups, abuse controls, retention, monitoring, and deployment configuration remain operational responsibilities.
 
 ## License and attribution

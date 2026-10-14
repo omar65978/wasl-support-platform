@@ -21,6 +21,7 @@ export class AppComponent {
     effect(() => {
       const session = this.s.session();
       if (
+        session.recovery === 'none' &&
         session.profile &&
         session.profile.role !== 'customer' &&
         this.router.url.startsWith('/sign-in')
