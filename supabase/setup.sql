@@ -268,6 +268,6 @@ begin
 end
 $$;
 
-revoke execute on all functions in schema public from public, anon, authenticated;
+revoke execute on function public.current_role(), public.can_view_request(uuid), public.handle_new_user(), public.create_request(text,text,public.request_category,public.request_urgency), public.change_request(uuid,integer,text,text), public.send_message(uuid,integer,text,boolean), public.reserve_attachment(uuid,text,text,integer,boolean), public.finish_attachment(uuid,boolean), public.request_summary(), public.manager_workload() from public, anon, authenticated;
 grant execute on function public.current_role(), public.can_view_request(uuid), public.create_request(text,text,public.request_category,public.request_urgency), public.change_request(uuid,integer,text,text), public.send_message(uuid,integer,text,boolean), public.reserve_attachment(uuid,text,text,integer,boolean), public.finish_attachment(uuid,boolean), public.request_summary(), public.manager_workload() to authenticated;
 grant usage on schema public to authenticated;

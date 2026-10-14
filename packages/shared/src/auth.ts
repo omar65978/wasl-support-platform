@@ -12,9 +12,9 @@ export class AuthController {
   subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
   private update(next: Partial<AuthState>) { this.state = { ...this.state, ...next }; this.listeners.forEach(l => l()); }
   async init() {
-    const role = sessionStorage.getItem(this.key) as Role | null;
-    if (role && ['customer','agent','manager'].includes(role)) { this.update({ profile: demoProfile(role), loading: false, demo: true }); return () => {}; }
     const subscription = supabase.auth.onAuthStateChange((_event, session) => { queueMicrotask(() => this.loadProfile(session?.user.id)); });
+    const role = sessionStorage.getItem(this.key) as Role | null;
+    if (role && ['customer','agent','manager'].includes(role)) { this.update({ profile: demoProfile(role), loading: false, demo: true }); return () => subscription.data.subscription.unsubscribe(); }
     const { data, error } = await supabase.auth.getSession();
     if (error) this.update({ error, loading: false }); else await this.loadProfile(data.session?.user.id);
     return () => subscription.data.subscription.unsubscribe();
