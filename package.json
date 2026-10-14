@@ -1,0 +1,24 @@
+{
+  "name": "wasl-support-platform",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "concurrently -n customer,support \"npm run dev -w @wasl/customer\" \"npm run dev -w @wasl/support\"",
+    "build": "npm run typecheck && npm run build -w @wasl/customer && npm run build -w @wasl/support",
+    "typecheck": "tsc -p packages/shared/tsconfig.json && tsc -p apps/customer/tsconfig.json",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:live": "node scripts/test-live.mjs",
+    "preview": "node scripts/serve.mjs",
+    "users:seed": "node --env-file=.env.seed scripts/seed-users.mjs",
+    "config": "node scripts/configure.mjs",
+    "verify": "npm run build && npm test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.51.1",
+    "concurrently": "^9.1.2",
+    "typescript": "~5.8.3",
+    "vitest": "^3.2.4"
+  }
+}

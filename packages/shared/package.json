@@ -1,0 +1,8 @@
+{
+  "name": "@wasl/shared",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {".": "./src/index.ts", "./styles.css": "./src/styles.css"},
+  "dependencies": {"@supabase/supabase-js": "^2.57.4"}
+}
