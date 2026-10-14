@@ -2,6 +2,14 @@
 
 Verified on **14 October 2026**, using Node.js 20.20.2 and npm 10.8.2 in the delivery environment. Node 22 LTS is the recommended deployment runtime.
 
+## Release 1.1 update
+
+The owner reports that the new hosted schema is already configured. This delivery changed no hosted tables. The supplied URL/public key were embedded in the shared source and examples. Auth settings returned HTTP 200; anonymous reads of `requests` and `profiles` returned HTTP 401 / PostgreSQL permission-denied code 42501. This is not a substitute for authenticated live workflow testing.
+
+Eight additional unit tests cover theme resolution, public-key validation, cloud environment precedence, missing-variable errors, and Vercel configuration. Five additional browser tests cover cross-app/cross-tab persistence, pre-bundle theme initialization, system preference changes, draft preservation, Arabic mobile use, and dark-mode accessibility across eight representative screens. Total: 34 SQL/unit/configuration tests and 16 browser tests.
+
+The production build and Vercel static-output generation pass locally. Actual hosted Vercel deployment has not been performed because no account connection is available.
+
 ## Completed checks
 
 | Check                                                   | Result                                                                                              |
@@ -12,7 +20,7 @@ Verified on **14 October 2026**, using Node.js 20.20.2 and npm 10.8.2 in the del
 | PostgreSQL migration/policy tests                       | 17 passed                                                                                           |
 | Shared model/validation tests                           | 9 passed                                                                                            |
 | Chromium end-to-end tests                               | 11 passed                                                                                           |
-| Total automated test cases                              | **37 passed**                                                                                       |
+| Total automated test cases                              | **50 passed**                                                                                       |
 | Representative automated WCAG A/AA checks               | No detected violations in tested customer login, customer list/detail, support list, manager report |
 | Arabic and RTL at 390 px                                | Passed, no document-level horizontal overflow in tested lists                                       |
 | Mobile navigation focus trap and Escape dismissal       | Passed                                                                                              |
@@ -41,8 +49,8 @@ Browser tests cover the complete create/claim/public reply/internal note/custome
 
 The delivery had no privileged project connection, database password, or administrative token. Therefore:
 
-- The hosted SQL migration has **not** been applied.
-- Real test Auth accounts have **not** been created.
+- The owner reports the hosted SQL migration is applied; this assistant did not apply or alter it.
+- Account setup is owner-managed; this delivery has no test-user passwords to verify it independently.
 - Hosted RLS, HTTP RPC serialization, Storage uploads/downloads, and live email confirmation have **not** been executed end to end.
 - `npm run test:live` is supplied but was **not run**.
 - SMTP configuration, backups, deployed HTTPS domains, infrastructure limits, and production monitoring remain owner tasks.
@@ -52,8 +60,8 @@ A public Auth endpoint returning HTTP 200 validates the project URL/public key, 
 
 ## Acceptance after owner setup
 
-1. Apply `supabase/setup.sql` once on the intended schema.
-2. Create the documented test accounts and roles.
+1. Keep the existing configured schema; do not rerun the initial SQL migration.
+2. Confirm the existing test accounts and roles.
 3. Configure authentication URLs and email delivery.
 4. Fill in `.env.live` locally and run `npm run test:live`.
 5. Demonstrate the real customer/agent/manager flow in separate browser contexts.

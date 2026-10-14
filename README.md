@@ -12,9 +12,9 @@ A bilingual customer-support operations platform with a **React customer portal*
 
 The application source, production builds, database migration, configuration examples, test tooling, and documentation are included. Both milestones are implemented.
 
-**One owner-side setup step remains:** apply `supabase/setup.sql` to the supplied Supabase project and create test accounts. A publishable key cannot perform administrative database setup. No database password, service-role key, or access token is included in this repository.
+**Update 1.1:** both applications now use project `vbsrwnjyiskbjangbohb`, with persistent light/dark appearance and a single-project Vercel deployment. The owner reports that the database setup is already complete. **Do not rerun the initial SQL setup on this configured project.**
 
-The supplied public Auth endpoint was reachable during verification. The hosted schema, actual Auth users, and hosted Storage workflow have **not** been provisioned or verified by this delivery. Run the live verification suite after setup.
+The new public Auth endpoint responds successfully, and anonymous requests to `requests` and `profiles` are denied. Authenticated hosted workflows have not been independently tested without the owner's test-user credentials. No admin key or password is included.
 
 An explicitly labeled browser-local demo is available for exploring both interfaces before backend setup. It is not a security boundary, does not contain real customer information, and never substitutes for a failed live request.
 
@@ -28,6 +28,7 @@ An explicitly labeled browser-local demo is available for exploring both interfa
 - View request progress, public conversation, attachments, and resolution.
 - Reply while a request is active; reopen a resolved request to continue.
 - English and Arabic interfaces with persistent language preference and RTL support.
+- Light/dark toggle on sign-in and application screens, saved across reloads and synchronized across same-origin tabs.
 
 ### Support workspace
 
@@ -83,6 +84,12 @@ npm run dev
 
 Both use the same Supabase project. Authentication storage is origin-scoped, so sign in separately on each development port. Use separate browser profiles for customer/agent/manager live demonstrations.
 
+## Deploy to Vercel
+
+Import the repository root using **Other** as the framework. `vercel.json` uses `npm run build:vercel` and publishes `site/`, containing `/customer/` and `/support/`. Add `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` to Vercel Production/Preview environment settings using the supplied public values, then deploy. Update Supabase Site URL and Redirect URLs to your actual HTTPS application paths.
+
+See [the Vercel guide](docs/VERCEL.md) for exact values and settings. No backend schema reset is needed.
+
 ## Set up Supabase
 
 The supplied project configuration is already in `packages/shared/src/config.ts`:
@@ -90,6 +97,8 @@ The supplied project configuration is already in `packages/shared/src/config.ts`
 ```text
 https://vbsrwnjyiskbjangbohb.supabase.co
 ```
+
+For a **new, unconfigured database only**:
 
 1. Open your Supabase project's **SQL Editor**.
 2. On a fresh application schema, run the entire contents of **`supabase/setup.sql` once**.
@@ -141,7 +150,7 @@ npm run config
 npm run build
 ```
 
-Edit `.env` before `npm run config`. The configuration generator accepts only an HTTPS URL and an `sb_publishable_` key. Never place an admin key in a frontend configuration file.
+Edit `.env` before `npm run config`. Root build/dev commands also refresh configuration automatically. Vercel environment values take precedence and must contain both fields. The configuration generator accepts only an HTTPS URL and an `sb_publishable_` key. Never place an admin key in a frontend configuration file.
 
 ## Roles and lifecycle
 
@@ -218,7 +227,9 @@ packages/shared/src/
   types.ts                  Roles, lifecycle, model types, validation
   i18n.ts                   English and Arabic application copy
   demo.ts                   Explicit browser-only sample environment
-  styles.css                Shared visual tokens and interface primitives
+  styles.css                Shared interface primitives
+  tokens.css                Semantic light/dark color palettes
+  theme.ts                  Persistent cross-application theme preferences
 supabase/
   setup.sql                 SQL Editor entry point
   migrations/               Versioned backend schema
@@ -234,6 +245,7 @@ docs/                      Architecture, setup, review, deployment, GitHub guide
 - [Demonstration walkthrough](docs/DEMO.md)
 - [Requirement traceability](docs/REQUIREMENTS.md)
 - [Design decisions](docs/DESIGN.md)
+- [Vercel deployment](docs/VERCEL.md)
 - [Deployment](docs/DEPLOYMENT.md)
 - [GitHub publishing and commit history](docs/GITHUB.md)
 - [Arabic handoff](docs/HANDOFF-AR.md)

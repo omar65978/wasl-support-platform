@@ -42,7 +42,7 @@ The clone's old `origin` points to the local bundle, which is why it is removed 
 
 ## Commit structure
 
-The delivery uses ten logical commits spanning:
+The initial delivery uses ten logical commits spanning:
 
 1. Workspace scaffolding and initial dependency setup.
 2. Shared models and database authorization/lifecycle.
@@ -54,6 +54,10 @@ The delivery uses ten logical commits spanning:
 8. Deployment, CI, and publication instructions.
 9. Final verification and tested UX/security refinements.
 10. Reproducible delivery packaging and handoff records.
+
+Release 1.1 preserves those ten commits and adds four focused commits for the new Supabase project, persistent light/dark themes, Vercel build configuration, and updated handoff records. The updated bundle contains fourteen commits.
+
+If you already published the original history without additional commits, the new branch is a normal fast-forward update. If your remote has additional work, fetch and merge/rebase that work first; do not force-push over it.
 
 Use `git log --oneline --reverse` to inspect the exact commit messages. This number is appropriate for a two-application milestone delivery: the commits represent actual work boundaries rather than arbitrary file splitting.
 

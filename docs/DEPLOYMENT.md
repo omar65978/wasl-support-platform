@@ -1,5 +1,9 @@
 # Deployment
 
+## Vercel
+
+For this release, use the supplied `vercel.json` and follow [VERCEL.md](VERCEL.md). Import the repository root, add the two public Supabase environment variables, and deploy both applications together. The build emits `site/customer/` and `site/support/`. Root build settings select the Other framework preset; no server process is required on Vercel.
+
 ## Recommended layout
 
 Host both applications on one HTTPS origin:

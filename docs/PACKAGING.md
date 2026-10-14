@@ -46,7 +46,7 @@ sha256sum -c SHA256SUMS.txt
 git bundle verify wasl-support.bundle
 ```
 
-Run the checksum command from the download directory and the bundle command from an initialized Git repository, or clone the bundle directly. On PowerShell, use `Get-FileHash Wasl-Support-Platform.zip -Algorithm SHA256` and compare its value with the checksum file.
+Run the checksum command from the download directory and the bundle command from an initialized Git repository, or clone the bundle directly. On PowerShell, use `Get-FileHash Wasl-Support-Platform-v1.1.0.zip -Algorithm SHA256` and compare its value with the checksum file.
 
 ## Archive versus repository
 

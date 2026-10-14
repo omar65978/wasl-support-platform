@@ -57,3 +57,9 @@ After screenshot review:
 - Checked Arabic and mobile layouts at 390 px.
 
 The interface aims for restraint: one memorable opening in the customer portal and straightforward tools everywhere else.
+
+## Release 1.1: appearance modes
+
+All application surfaces now use shared semantic tokens. Light mode keeps the cool off-white canvas and restrained blue actions. Dark mode uses a navy canvas (`#111B29`), layered surfaces (`#192638`, `#24344A`), soft text (`#E3EBF6`), muted text (`#AFBDD0`), and a quieter hero (`#1E4079`). Status colors retain their meaning without neon accents or pure black backgrounds.
+
+The theme toggle appears on both sign-in screens and application headers. It follows the system initially, persists an explicit choice, synchronizes same-origin tabs, and changes appearance without remounting forms or losing drafts. A small external bootstrap script applies the initial choice before application bundles load, remaining compatible with a CSP that disallows inline JavaScript.

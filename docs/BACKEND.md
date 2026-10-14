@@ -1,5 +1,7 @@
 # Backend setup
 
+**Existing configured project:** the owner reports completing setup on `vbsrwnjyiskbjangbohb`. The 1.1 frontend update does not require running this initial migration again. The installation instructions below are for a fresh database only. For deployment URL changes, follow [VERCEL.md](VERCEL.md).
+
 ## Selected service
 
 Supabase provides PostgreSQL, Auth, and private Storage. Both applications connect to the same project and share the same API implementation. No application server with a privileged database key is exposed to browsers.

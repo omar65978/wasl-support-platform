@@ -33,7 +33,8 @@ bundle = output / 'wasl-support.bundle'
 subprocess.run(['git', '-C', str(root), 'bundle', 'create', str(bundle), '--all'], check=True)
 subprocess.run(['git', '-C', str(root), 'bundle', 'verify', str(bundle)], check=True)
 history = git('log', '--reverse', '--format=%h %s').decode()
-archive = output / 'Wasl-Support-Platform.zip'
+version = json.loads((root / 'package.json').read_text())['version']
+archive = output / f'Wasl-Support-Platform-v{version}.zip'
 manifest = {'commit': git('rev-parse', 'HEAD').decode().strip(), 'files': {}}
 
 with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as package:
