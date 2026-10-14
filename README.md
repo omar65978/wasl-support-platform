@@ -4,7 +4,7 @@
 
 A bilingual customer support platform that connects customers, support agents, and managers through one shared request workflow. Two purpose-built applications use the same Supabase backend: a **React customer portal** and an **Angular support workspace**.
 
-[![Verify platform](https://github.com/omar65978/wasl-support-platform-v2/actions/workflows/verify.yml/badge.svg)](https://github.com/omar65978/wasl-support-platform-v2/actions/workflows/verify.yml)
+[![Verify platform](https://github.com/omar65978/wasl-support-platform/actions/workflows/verify.yml/badge.svg)](https://github.com/omar65978/wasl-support-platform/actions/workflows/verify.yml)
 
 [Customer portal](https://wasl-support-platform-v2.vercel.app/customer/) · [Support workspace](https://wasl-support-platform-v2.vercel.app/support/) · [Setup guide](docs/BACKEND.md) · [Architecture](docs/ARCHITECTURE.md)
 
@@ -144,7 +144,7 @@ An unassigned request must be claimed or assigned before replying through the su
 ### Install and run
 
 ```bash
-git clone https://github.com/omar65978/wasl-support-platform-v2.git
+git clone https://github.com/omar65978/wasl-support-platform.git
 cd wasl-support-platform
 npm ci
 npm run build
