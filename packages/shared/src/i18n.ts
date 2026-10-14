@@ -1,0 +1,111 @@
+import type { Language } from './types';
+export const en = {
+  brand: 'Wasl', brandAr: 'وصل', customerPortal: 'Customer portal', supportWorkspace: 'Support workspace',
+  requests: 'My requests', allRequests: 'All requests', workspace: 'Workspace', overview: 'Workload overview', myQueue: 'Assigned to me', unassigned: 'Unassigned', urgentQueue: 'Urgent requests',
+  signIn: 'Sign in', signOut: 'Sign out', email: 'Email address', password: 'Password', name: 'Full name', register: 'Create account', haveAccount: 'Already have an account?', needAccount: 'New to Wasl?',
+  welcome: 'A little clarity. A lot less chasing.', welcomeBody: 'Get help, follow the conversation, and know where things stand. Your support starts here.',
+  loginTitle: 'Good to see you.', loginBody: 'Sign in to keep your support conversations moving.', staffLoginTitle: 'Your team. In sync.', staffLoginBody: 'One place for the requests, people, and conversations that need your attention.',
+  loginRequired: 'Sign in to continue.', loginPending: 'Checking your session…', signInPending: 'Signing in…', forgotHint: 'Need access? Contact your support administrator.',
+  demo: 'Explore the demo', demoNotice: 'Demo workspace. Sample data stays in this browser; nothing is sent to Supabase.', demoCustomer: 'Try as a customer', demoAgent: 'Try as an agent', demoManager: 'Try as a manager',
+  demoFiles: 'Attachments are available in the connected Supabase workspace, not in demo mode.', demoReset: 'Reset demo data',
+  wrongRole: 'You are signed in to the other workspace.', wrongRoleBody: 'Your account does not have access to this application. Open the workspace for your role.', openWorkspace: 'Open my workspace',
+  hello: 'Hello', customerHero: 'Help is a conversation away.', customerHeroBody: 'A question, a snag, something not quite right? Let’s get it sorted, together.', newRequest: 'Create a request',
+  heroNote: 'One request. Everyone on the same page.', heroTracking: 'You tell us what happened', heroOwnership: 'The right person takes it from here', heroResolution: 'A clear answer, all in one place',
+  yourRequests: 'Your requests', listSubtitle: 'The latest on everything you’ve shared with us.', supportSubtitle: 'Give every request a clear next step.', all: 'All requests', active: 'Active', waiting: 'Waiting for you', completed: 'Completed', total: 'Total requests',
+  search: 'Search requests', searchPlaceholder: 'Search by keyword or reference…', filter: 'Filters', clearFilters: 'Clear filters', status: 'Status', urgency: 'Urgency', category: 'Category', owner: 'Assigned employee', customer: 'Customer',
+  allStatuses: 'All statuses', allUrgencies: 'All urgency levels', allCategories: 'All categories', allOwners: 'Everyone', sort: 'Sort by', updated: 'Recently updated', oldest: 'Oldest first', urgencySort: 'Most urgent first',
+  new: 'New', in_progress: 'In progress', waiting_customer: 'Waiting for customer', resolved: 'Resolved', low: 'Low', normal: 'Normal', high: 'High', urgent: 'Urgent',
+  account: 'Account access', billing: 'Billing & payments', technical: 'Technical issue', general: 'General question', agent: 'Support agent', manager: 'Support manager',
+  loading: 'Loading…', refreshing: 'Checking for updates…', live: 'Updates every 15 seconds', lastUpdated: 'Last updated', refresh: 'Refresh', retry: 'Try again',
+  noRequests: 'Nothing here just yet.', noRequestsBody: 'When you need a hand, create a request. You can follow every update here.', noResults: 'No matching requests.', noResultsBody: 'Try another keyword or clear your filters.',
+  request: 'Request', reference: 'Reference', updatedAt: 'Updated', previous: 'Previous', next: 'Next', page: 'Page', of: 'of', results: 'requests', viewRequest: 'Open request',
+  back: 'Back to requests', createTitle: 'What can we help you with?', createBody: 'A few details will help the team understand what’s happening.', title: 'Request title', titlePlaceholder: 'A short summary of what’s happening',
+  description: 'What happened?', descriptionPlaceholder: 'Tell us what you expected, what happened instead, and anything you’ve already tried.', descriptionHelp: 'At least 20 characters. Do not include passwords or payment details.',
+  urgencyHelp: 'Urgent is for a critical issue that prevents you from working.', cancel: 'Cancel', submit: 'Send request', saving: 'Saving…', createdSuccess: 'Request created. Your support team can see it now.',
+  conversation: 'Conversation', activity: 'Activity', details: 'Request details', originalRequest: 'Original request', publicReply: 'Reply to customer', reply: 'Send a reply', internalNote: 'Internal note', internalHint: 'Only support employees can see this note and its attachments.',
+  publicHint: 'The customer can see this message and its attachments.', messagePlaceholder: 'Write your message…', notePlaceholder: 'Share context with your team…', send: 'Send message', addNote: 'Add note', sending: 'Sending…',
+  messageSuccess: 'Message sent.', noteSuccess: 'Internal note added.', noMessages: 'The conversation starts here.', noMessagesBody: 'New messages from you and the support team will appear here.', olderMessages: 'Load earlier messages',
+  attachments: 'Attachments', attach: 'Attach a file', fileHelp: 'PDF, PNG or JPG. Up to 5 MB per file.', noAttachments: 'No files attached.', download: 'Download', uploadSuccess: 'File attached.', uploading: 'Uploading…',
+  claim: 'Take this request', claimHint: 'Take responsibility to reply and update progress.', assign: 'Reassign request', chooseAgent: 'Choose an employee', assignSuccess: 'Request reassigned.', claimSuccess: 'Request assigned to you.',
+  updateProgress: 'Update progress', startProgress: 'Continue investigation', waitCustomer: 'Wait for customer', resolve: 'Resolve request', resolution: 'Resolution', resolutionPlaceholder: 'Explain what was fixed and what the customer should know.',
+  resolveHelp: 'Add a clear resolution of at least 10 characters. Normal communication stops until the request is reopened.', reopen: 'Reopen request', closedTitle: 'This request is resolved.', closedBody: 'Still need a hand? Reopen the request to continue the conversation.',
+  reopenSuccess: 'Request reopened.', resolveSuccess: 'Request resolved.', updateSuccess: 'Request updated.', changeUrgency: 'Change urgency', notOwner: 'Another employee owns this request. Only that employee or a manager can change it.',
+  notFound: 'Request unavailable.', notFoundBody: 'It may not exist, or your account may not have access. Return to your requests.',
+  team: 'Support team', teamSubtitle: 'Ownership and capacity, without the guesswork.', overviewTitle: 'A clear view of the work.', overviewSubtitle: 'Live totals from your shared workspace. Resolved totals include all time.', workload: 'Team workload', employee: 'Employee', activeRequests: 'Active requests', waitingOnCustomer: 'Waiting for customer', urgentAttention: 'Need urgent attention',
+  noWorkload: 'No support employees yet. Ask your administrator to create team accounts.', workloadHint: 'Select an employee to view their requests.',
+  privacy: 'Your requests stay yours.', privacyBody: 'Only you and the support team can access your requests.', helpTitle: 'A better request, a faster answer.', helpBody: 'Include what happened, when it started, and a screenshot if you have one. Leave out passwords and sensitive payment information.',
+  helpLink: 'How to write a helpful request', footer: 'A clearer connection to your support team.', connected: 'Connected to Supabase', demoMode: 'Demo mode',
+  registered: 'Check your email to confirm your account, then sign in.', passwordHelp: 'Use at least 12 characters.', language: 'العربية', switchLanguage: 'Switch to Arabic',
+  errorGeneric: 'This operation could not be completed. Check your connection and try again.', errorAuth: 'The email or password is incorrect, or the email has not been confirmed.', errorSetup: 'The database is not ready. Apply supabase/setup.sql in the Supabase SQL Editor.',
+  errorConflict: 'This request changed while you were working. Review the latest update and try again. Your draft is still here.', errorForbidden: 'Your account is not allowed to perform this action.', errorState: 'This action is not available in the current request state. Refresh and try again.',
+  errorClosed: 'Reopen this request before adding messages or files.', errorOwner: 'Only the assigned employee or a manager can change this request.', errorTitle: 'Enter a title between 5 and 140 characters.', errorDescription: 'Enter a description between 20 and 10,000 characters.', errorMessage: 'Enter a message between 1 and 10,000 characters.', errorResolution: 'Enter a resolution of at least 10 characters.',
+  errorFileSize: 'Choose a non-empty file no larger than 5 MB.', errorFileType: 'Choose a valid PDF, PNG or JPG file. The contents must match its type.', errorFileName: 'Use a filename with no more than 180 characters.', errorFileLimit: 'This request has reached the limit of 50 attachments.',
+  errorRate: 'Too many attempts. Wait a moment before trying again.', errorPassword: 'Use a password with at least 12 characters.', errorName: 'Enter your full name, up to 100 characters.', errorSession: 'Your session has ended. Sign in again.',
+  created: 'Created the request', replyEvent: 'Sent a message', internal_note: 'Added an internal note', claimEvent: 'Took responsibility', assignEvent: 'Reassigned responsibility', reopenEvent: 'Reopened the request', resolveEvent: 'Resolved the request', in_progressEvent: 'Continued investigation', waiting_customerEvent: 'Waiting for customer', urgencyEvent: 'Changed urgency', attachment: 'Added a file', internal_attachment: 'Added an internal file',
+  you: 'You', today: 'Today', showing: 'Showing', profile: 'Account', securityNote: 'Secure access. Shared context. Clear ownership.', close: 'Close', backSignIn: 'Back to sign in', showPassword: 'Show password', hidePassword: 'Hide password',
+  staleData: 'Could not refresh. Displayed data may be out of date. Check your connection.', attachmentFailure: 'The file was not attached. Try again. A failed upload may require administrator cleanup.',
+  helpHeading: 'Give us the useful details.', helpStep1: 'Describe the problem and what you expected to happen.', helpStep2: 'Include when it started and the steps to reproduce it.', helpStep3: 'Attach a screenshot after creating your request. Keep sensitive information out.',
+};
+export type TranslationKey = keyof typeof en;
+export const ar: Record<TranslationKey, string> = {
+  brand: 'وصل', brandAr: 'Wasl', customerPortal: 'بوابة العملاء', supportWorkspace: 'مساحة الدعم',
+  requests: 'طلباتي', allRequests: 'كل الطلبات', workspace: 'مساحة العمل', overview: 'نظرة على عبء العمل', myQueue: 'المسندة إليّ', unassigned: 'غير المسندة', urgentQueue: 'الطلبات العاجلة',
+  signIn: 'تسجيل الدخول', signOut: 'تسجيل الخروج', email: 'البريد الإلكتروني', password: 'كلمة المرور', name: 'الاسم الكامل', register: 'إنشاء حساب', haveAccount: 'لديك حساب بالفعل؟', needAccount: 'جديد في وصل؟',
+  welcome: 'وضوح أكثر. متابعة أقل.', welcomeBody: 'اطلب المساعدة، تابع المحادثة، واعرف أين وصل طلبك. الدعم يبدأ هنا.',
+  loginTitle: 'سعداء بعودتك.', loginBody: 'سجّل الدخول لمتابعة طلباتك والتواصل مع فريق الدعم.', staffLoginTitle: 'فريقك على تواصل.', staffLoginBody: 'مكان واحد للطلبات والأشخاص والمحادثات التي تحتاج إلى اهتمامك.',
+  loginRequired: 'سجّل الدخول للمتابعة.', loginPending: 'جارٍ التحقق من جلستك…', signInPending: 'جارٍ تسجيل الدخول…', forgotHint: 'تحتاج إلى صلاحية دخول؟ تواصل مع مسؤول الدعم.',
+  demo: 'استكشف النسخة التجريبية', demoNotice: 'مساحة تجريبية. تُحفظ البيانات في هذا المتصفح فقط ولا تُرسل إلى Supabase.', demoCustomer: 'جرّب كعميل', demoAgent: 'جرّب كموظف', demoManager: 'جرّب كمدير',
+  demoFiles: 'المرفقات متاحة عند الاتصال بـ Supabase، وليست متاحة في الوضع التجريبي.', demoReset: 'إعادة ضبط التجربة',
+  wrongRole: 'هذا الحساب مخصص لمساحة العمل الأخرى.', wrongRoleBody: 'حسابك غير مخوّل لدخول هذا التطبيق. افتح المساحة المناسبة لدورك.', openWorkspace: 'فتح مساحة عملي',
+  hello: 'مرحبًا', customerHero: 'المساعدة تبدأ بمحادثة.', customerHeroBody: 'سؤال، مشكلة، أو شيء لا يعمل كما تتوقع؟ لنصل إلى الحل معًا.', newRequest: 'إنشاء طلب',
+  heroNote: 'طلب واحد. والجميع على اطلاع.', heroTracking: 'أخبرنا بما حدث', heroOwnership: 'يتولى الموظف المناسب مساعدتك', heroResolution: 'إجابة واضحة في مكان واحد',
+  yourRequests: 'طلباتك', listSubtitle: 'آخر المستجدات حول كل ما شاركته معنا.', supportSubtitle: 'لكل طلب خطوة تالية واضحة.', all: 'كل الطلبات', active: 'نشطة', waiting: 'بانتظار ردك', completed: 'مكتملة', total: 'إجمالي الطلبات',
+  search: 'البحث في الطلبات', searchPlaceholder: 'ابحث بكلمة أو برقم الطلب…', filter: 'الفلاتر', clearFilters: 'مسح الفلاتر', status: 'الحالة', urgency: 'الاستعجال', category: 'التصنيف', owner: 'الموظف المسؤول', customer: 'العميل',
+  allStatuses: 'كل الحالات', allUrgencies: 'كل درجات الاستعجال', allCategories: 'كل التصنيفات', allOwners: 'الجميع', sort: 'ترتيب حسب', updated: 'آخر تحديث', oldest: 'الأقدم أولًا', urgencySort: 'الأكثر استعجالًا',
+  new: 'جديد', in_progress: 'قيد المعالجة', waiting_customer: 'بانتظار العميل', resolved: 'تم الحل', low: 'منخفضة', normal: 'عادية', high: 'مرتفعة', urgent: 'عاجلة',
+  account: 'الوصول إلى الحساب', billing: 'الفوترة والمدفوعات', technical: 'مشكلة تقنية', general: 'استفسار عام', agent: 'موظف دعم', manager: 'مدير دعم',
+  loading: 'جارٍ التحميل…', refreshing: 'جارٍ التحقق من التحديثات…', live: 'تحديث كل ١٥ ثانية', lastUpdated: 'آخر تحديث', refresh: 'تحديث', retry: 'المحاولة مجددًا',
+  noRequests: 'لا توجد طلبات بعد.', noRequestsBody: 'عندما تحتاج إلى المساعدة، أنشئ طلبًا. يمكنك متابعة كل تحديث هنا.', noResults: 'لا توجد طلبات مطابقة.', noResultsBody: 'جرّب كلمة أخرى أو امسح الفلاتر.',
+  request: 'الطلب', reference: 'رقم الطلب', updatedAt: 'التحديث', previous: 'السابق', next: 'التالي', page: 'الصفحة', of: 'من', results: 'طلبًا', viewRequest: 'فتح الطلب',
+  back: 'العودة للطلبات', createTitle: 'كيف يمكننا مساعدتك؟', createBody: 'بعض التفاصيل تساعد الفريق على فهم ما يحدث.', title: 'عنوان الطلب', titlePlaceholder: 'ملخص قصير لما يحدث',
+  description: 'ماذا حدث؟', descriptionPlaceholder: 'أخبرنا بما توقّعته وما حدث بدلًا منه، وأي خطوات جرّبتها.', descriptionHelp: '٢٠ حرفًا على الأقل. لا تُدرج كلمات المرور أو بيانات الدفع.',
+  urgencyHelp: 'اختر عاجلة للمشكلات الحرجة التي تمنعك من العمل.', cancel: 'إلغاء', submit: 'إرسال الطلب', saving: 'جارٍ الحفظ…', createdSuccess: 'تم إنشاء الطلب وأصبح متاحًا لفريق الدعم.',
+  conversation: 'المحادثة', activity: 'سجل النشاط', details: 'تفاصيل الطلب', originalRequest: 'الطلب الأصلي', publicReply: 'رد للعميل', reply: 'إرسال رد', internalNote: 'ملاحظة داخلية', internalHint: 'هذه الملاحظة ومرفقاتها مرئية لموظفي الدعم فقط.',
+  publicHint: 'يمكن للعميل رؤية هذه الرسالة ومرفقاتها.', messagePlaceholder: 'اكتب رسالتك…', notePlaceholder: 'شارك التفاصيل مع فريقك…', send: 'إرسال الرسالة', addNote: 'إضافة ملاحظة', sending: 'جارٍ الإرسال…',
+  messageSuccess: 'تم إرسال الرسالة.', noteSuccess: 'تمت إضافة الملاحظة الداخلية.', noMessages: 'المحادثة تبدأ هنا.', noMessagesBody: 'ستظهر هنا رسائلك ورسائل فريق الدعم.', olderMessages: 'تحميل الرسائل السابقة',
+  attachments: 'المرفقات', attach: 'إرفاق ملف', fileHelp: 'PDF أو PNG أو JPG. حتى ٥ ميجابايت للملف.', noAttachments: 'لا توجد مرفقات.', download: 'تنزيل', uploadSuccess: 'تم إرفاق الملف.', uploading: 'جارٍ الرفع…',
+  claim: 'استلام هذا الطلب', claimHint: 'استلم مسؤولية الطلب للرد وتحديث حالته.', assign: 'إعادة إسناد الطلب', chooseAgent: 'اختر موظفًا', assignSuccess: 'تمت إعادة إسناد الطلب.', claimSuccess: 'أُسند الطلب إليك.',
+  updateProgress: 'تحديث التقدم', startProgress: 'متابعة المعالجة', waitCustomer: 'انتظار رد العميل', resolve: 'حل الطلب', resolution: 'الحل', resolutionPlaceholder: 'اشرح ما تم إصلاحه وما يحتاج العميل إلى معرفته.',
+  resolveHelp: 'اكتب حلًا واضحًا من ١٠ أحرف على الأقل. تتوقف المراسلة حتى إعادة فتح الطلب.', reopen: 'إعادة فتح الطلب', closedTitle: 'تم حل هذا الطلب.', closedBody: 'هل ما زلت تحتاج إلى المساعدة؟ أعد فتح الطلب لمتابعة المحادثة.',
+  reopenSuccess: 'تمت إعادة فتح الطلب.', resolveSuccess: 'تم حل الطلب.', updateSuccess: 'تم تحديث الطلب.', changeUrgency: 'تغيير الاستعجال', notOwner: 'هذا الطلب مسؤولية موظف آخر. يمكن لذلك الموظف أو المدير فقط تعديله.',
+  notFound: 'الطلب غير متاح.', notFoundBody: 'قد لا يكون موجودًا أو قد لا تملك صلاحية الوصول إليه. عُد إلى طلباتك.',
+  team: 'فريق الدعم', teamSubtitle: 'المسؤوليات وأعباء العمل بوضوح.', overviewTitle: 'صورة واضحة للعمل.', overviewSubtitle: 'إحصاءات مباشرة من مساحة العمل المشتركة. تشمل الطلبات المحلولة جميع الأوقات.', workload: 'عبء عمل الفريق', employee: 'الموظف', activeRequests: 'الطلبات النشطة', waitingOnCustomer: 'بانتظار العميل', urgentAttention: 'تحتاج اهتمامًا عاجلًا',
+  noWorkload: 'لا يوجد موظفو دعم بعد. اطلب من المسؤول إنشاء حسابات الفريق.', workloadHint: 'اختر موظفًا لعرض طلباته.',
+  privacy: 'طلباتك خاصة بك.', privacyBody: 'لا يمكن الوصول لطلباتك إلا بواسطتك وفريق الدعم.', helpTitle: 'تفاصيل أوضح، إجابة أسرع.', helpBody: 'اذكر ما حدث ومتى بدأ، وأرفق لقطة شاشة إن أمكن. لا تشارك كلمات المرور أو بيانات الدفع الحساسة.',
+  helpLink: 'كيف تكتب طلبًا مفيدًا', footer: 'تواصل أوضح مع فريق الدعم.', connected: 'متصل بـ Supabase', demoMode: 'الوضع التجريبي',
+  registered: 'تحقّق من بريدك لتأكيد حسابك، ثم سجّل الدخول.', passwordHelp: 'استخدم ١٢ حرفًا على الأقل.', language: 'English', switchLanguage: 'التبديل إلى الإنجليزية',
+  errorGeneric: 'تعذّر إكمال العملية. تحقّق من اتصالك وحاول مجددًا.', errorAuth: 'البريد الإلكتروني أو كلمة المرور غير صحيحة، أو لم يتم تأكيد البريد.', errorSetup: 'قاعدة البيانات غير جاهزة. نفّذ supabase/setup.sql في محرر SQL بلوحة Supabase.',
+  errorConflict: 'تغيّر الطلب أثناء عملك. راجع آخر تحديث ثم حاول مجددًا. مسودتك ما زالت محفوظة.', errorForbidden: 'حسابك غير مخوّل لتنفيذ هذا الإجراء.', errorState: 'هذا الإجراء غير متاح في الحالة الحالية. حدّث الصفحة وحاول مجددًا.',
+  errorClosed: 'أعد فتح الطلب قبل إضافة الرسائل أو الملفات.', errorOwner: 'يمكن للموظف المسؤول أو المدير فقط تعديل هذا الطلب.', errorTitle: 'أدخل عنوانًا بين ٥ و١٤٠ حرفًا.', errorDescription: 'أدخل وصفًا بين ٢٠ و١٠٬٠٠٠ حرف.', errorMessage: 'أدخل رسالة بين حرف واحد و١٠٬٠٠٠ حرف.', errorResolution: 'أدخل حلًا من ١٠ أحرف على الأقل.',
+  errorFileSize: 'اختر ملفًا غير فارغ لا يزيد حجمه على ٥ ميجابايت.', errorFileType: 'اختر ملف PDF أو PNG أو JPG صالحًا ومتطابق المحتوى مع نوعه.', errorFileName: 'استخدم اسم ملف لا يتجاوز ١٨٠ حرفًا.', errorFileLimit: 'وصل الطلب إلى حد ٥٠ مرفقًا.',
+  errorRate: 'محاولات كثيرة. انتظر قليلًا قبل المحاولة مجددًا.', errorPassword: 'استخدم كلمة مرور من ١٢ حرفًا على الأقل.', errorName: 'أدخل اسمك الكامل بما لا يتجاوز ١٠٠ حرف.', errorSession: 'انتهت جلستك. سجّل الدخول مجددًا.',
+  created: 'أنشأ الطلب', replyEvent: 'أرسل رسالة', internal_note: 'أضاف ملاحظة داخلية', claimEvent: 'استلم المسؤولية', assignEvent: 'أعاد إسناد المسؤولية', reopenEvent: 'أعاد فتح الطلب', resolveEvent: 'حلّ الطلب', in_progressEvent: 'تابع المعالجة', waiting_customerEvent: 'بانتظار رد العميل', urgencyEvent: 'غيّر درجة الاستعجال', attachment: 'أرفق ملفًا', internal_attachment: 'أرفق ملفًا داخليًا',
+  you: 'أنت', today: 'اليوم', showing: 'عرض', profile: 'الحساب', securityNote: 'دخول آمن. تفاصيل مشتركة. مسؤولية واضحة.', close: 'إغلاق', backSignIn: 'العودة لتسجيل الدخول', showPassword: 'إظهار كلمة المرور', hidePassword: 'إخفاء كلمة المرور',
+  staleData: 'تعذّر التحديث. قد تكون البيانات المعروضة قديمة. تحقّق من اتصالك.', attachmentFailure: 'لم يُرفق الملف. حاول مجددًا. قد يحتاج الرفع الفاشل إلى تنظيف بواسطة المسؤول.',
+  helpHeading: 'شاركنا التفاصيل المفيدة.', helpStep1: 'صِف المشكلة وما كنت تتوقع حدوثه.', helpStep2: 'اذكر متى بدأت المشكلة وخطوات تكرارها.', helpStep3: 'أرفق لقطة شاشة بعد إنشاء طلبك. تجنّب المعلومات الحساسة.',
+};
+export function translate(language: Language, key: TranslationKey): string { return (language === 'ar' ? ar : en)[key]; }
+export function getLanguage(): Language { return localStorage.getItem('wasl:language') === 'ar' ? 'ar' : 'en'; }
+export function setLanguage(language: Language) { localStorage.setItem('wasl:language', language); document.documentElement.lang = language; document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr'; }
+export function formatDate(date: string, lang: Language, withTime = false) { return new Intl.DateTimeFormat(lang === 'ar' ? 'ar-EG' : 'en-GB', { day: 'numeric', month: 'short', ...(withTime ? { hour: '2-digit', minute: '2-digit' } as const : {}) }).format(new Date(date)); }
+export function initials(name: string) { return name.trim().split(/\s+/).slice(0, 2).map(s => s[0]).join('').toUpperCase(); }
+export function activityKey(action: string): TranslationKey { const map: Record<string, TranslationKey> = { reply: 'replyEvent', claim: 'claimEvent', assign: 'assignEvent', reopen: 'reopenEvent', resolve: 'resolveEvent', in_progress: 'in_progressEvent', waiting_customer: 'waiting_customerEvent', urgency: 'urgencyEvent' }; return map[action] || (action in en ? action as TranslationKey : 'updateSuccess'); }
+export function errorKey(error: unknown): TranslationKey {
+  const e = error as { message?: string; code?: string; status?: number };
+  const message = e?.message || String(error);
+  const pairs: [string, TranslationKey][] = [['CONFLICT','errorConflict'],['FORBIDDEN','errorForbidden'],['NOT_OWNER','errorOwner'],['INVALID_STATE','errorState'],['REQUEST_CLOSED','errorClosed'],['INVALID_TITLE','errorTitle'],['INVALID_DESCRIPTION','errorDescription'],['INVALID_MESSAGE','errorMessage'],['RESOLUTION_REQUIRED','errorResolution'],['FILE_SIZE','errorFileSize'],['INVALID_FILE','errorFileType'],['FILE_NAME','errorFileName'],['ATTACHMENT_LIMIT','errorFileLimit'],['Invalid login','errorAuth'],['Email not confirmed','errorAuth'],['INVALID_PASSWORD','errorPassword'],['INVALID_NAME','errorName'],['SESSION_EXPIRED','errorSession'],['UPLOAD_FAILED','attachmentFailure']];
+  for (const [part,key] of pairs) if (message.includes(part)) return key;
+  if (e?.status === 429) return 'errorRate';
+  if (['42P01','PGRST205','PGRST202'].includes(e?.code || '')) return 'errorSetup';
+  return 'errorGeneric';
+}

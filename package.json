@@ -2,7 +2,10 @@
   "name": "wasl-support-platform",
   "private": true,
   "version": "1.0.0",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "concurrently -n customer,support \"npm run dev -w @wasl/customer\" \"npm run dev -w @wasl/support\"",
     "build": "npm run typecheck && npm run build -w @wasl/customer && npm run build -w @wasl/support",
@@ -18,7 +21,7 @@
   "devDependencies": {
     "@playwright/test": "^1.51.1",
     "concurrently": "^9.1.2",
-    "typescript": "~5.8.3",
+    "typescript": "~5.9.3",
     "vitest": "^3.2.4"
   }
 }
