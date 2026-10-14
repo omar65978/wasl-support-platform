@@ -33,6 +33,8 @@ export class IconComponent {
   @Input() name = 'request';
   @Input() size = 18;
   paths: Record<string, string> = {
+    sun: 'M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0 M12 2v2 M12 20v2 M2 12h2 M20 12h2 M5 5l1.5 1.5 M17.5 17.5L19 19 M5 19l1.5-1.5 M17.5 6.5L19 5',
+    moon: 'M21 13a9 9 0 0 1-10-10 9 9 0 1 0 10 10',
     request: 'M8 3h8l4 4v14H4V3h4 M8 11h8 M8 15h6 M15 3v5h5',
     grid: 'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',
     inbox: 'M4 4h16l2 11v5H2v-5L4 4 M2 15h6l2 3h4l2-3h6',

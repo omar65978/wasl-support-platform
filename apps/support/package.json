@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "ng serve --host 0.0.0.0 --port 4200 --allowed-hosts",
-    "build": "ng build"
+    "build": "ng build",
+    "prebuild": "node ../../scripts/prepare-assets.mjs support",
+    "predev": "node ../../scripts/prepare-assets.mjs support"
   },
   "dependencies": {
     "@angular/common": "^21.2.25",

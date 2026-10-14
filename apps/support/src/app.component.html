@@ -13,6 +13,7 @@
   <app-auth />
 } @else if (s.session().profile?.role === 'customer') {
   <div class="full-center">
+    <app-theme-toggle />
     <h1>{{ s.t('wrongRole') }}</h1>
     <p>{{ s.t('wrongRoleBody') }}</p>
     <a class="btn btn-primary" [href]="customerUrl">{{ s.t('openWorkspace') }}</a>
@@ -130,6 +131,7 @@
           </strong>
         </div>
         <div class="flex">
+          <app-theme-toggle />
           <span class="topbar-role">
             <app-icon name="shield" [size]="13" />
             {{ s.t(s.session().profile!.role) }}

@@ -1,5 +1,9 @@
 import type { Language } from './types';
 export const en = {
+  lightMode: 'Light mode',
+  darkMode: 'Dark mode',
+  switchToLight: 'Switch to light mode',
+  switchToDark: 'Switch to dark mode',
   brand: 'Wasl',
   brandAr: 'وصل',
   customerPortal: 'Customer portal',
@@ -247,6 +251,10 @@ export const en = {
 };
 export type TranslationKey = keyof typeof en;
 export const ar: Record<TranslationKey, string> = {
+  lightMode: 'الوضع الفاتح',
+  darkMode: 'الوضع الداكن',
+  switchToLight: 'التبديل إلى الوضع الفاتح',
+  switchToDark: 'التبديل إلى الوضع الداكن',
   brand: 'وصل',
   brandAr: 'Wasl',
   customerPortal: 'بوابة العملاء',

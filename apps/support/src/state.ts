@@ -1,6 +1,10 @@
-import { Injectable, signal } from '@angular/core';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import {
   AuthController,
+  getTheme,
+  initializeTheme,
+  subscribeTheme,
+  toggleTheme,
   Repository,
   getLanguage,
   setLanguage,
@@ -18,9 +22,15 @@ export class AppState {
   readonly api = new Repository(this.auth);
   readonly session = signal(this.auth.getSnapshot());
   readonly language = signal<Language>(getLanguage());
+  readonly theme = signal(getTheme());
+  readonly toggleTheme = toggleTheme;
   readonly notice = signal<TranslationKey | null>(null);
   private timeout?: ReturnType<typeof setTimeout>;
   constructor() {
+    initializeTheme();
+    this.theme.set(getTheme());
+    const stopTheme = subscribeTheme(() => this.theme.set(getTheme()));
+    inject(DestroyRef).onDestroy(stopTheme);
     setLanguage(this.language());
     this.auth.subscribe(() => this.session.set(this.auth.getSnapshot()));
     this.auth.init();

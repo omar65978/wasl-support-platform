@@ -1,3 +1,4 @@
+import { ThemeToggle } from './ThemeToggle';
 import { useState } from 'react';
 import { HashRouter, Link, Route, Routes } from 'react-router-dom';
 import { Globe2, LayoutList, LogOut, ShieldCheck } from 'lucide-react';
@@ -31,6 +32,7 @@ function Shell() {
     return (
       <div className="full-center">
         <Brand />
+        <ThemeToggle />
         <h1>{t('wrongRole')}</h1>
         <p>{t('wrongRoleBody')}</p>
         <a href={applicationUrl('support')} className="btn btn-primary">
@@ -73,6 +75,7 @@ function Shell() {
             </Link>
           </nav>
           <div className="header-controls">
+            <ThemeToggle />
             <button
               className="btn btn-quiet btn-small"
               onClick={toggleLanguage}

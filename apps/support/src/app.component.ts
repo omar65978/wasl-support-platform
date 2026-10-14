@@ -1,3 +1,4 @@
+import { ThemeToggleComponent } from './theme-toggle.component';
 import { Component, HostListener, effect, inject } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { applicationUrl } from '@wasl/shared';
@@ -7,7 +8,7 @@ import { IconComponent } from './icon.component';
 @Component({
   selector: 'wasl-app',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, AuthComponent, IconComponent],
+  imports: [ThemeToggleComponent, RouterLink, RouterOutlet, AuthComponent, IconComponent],
   templateUrl: './app.component.html',
 })
 export class AppComponent {

@@ -1,6 +1,6 @@
 .customer-header {
   height: 86px;
-  background: white;
+  background: var(--surface);
   border-bottom: 1px solid var(--line);
   display: flex;
   align-items: center;
@@ -60,13 +60,13 @@
   color: var(--muted);
 }
 .customer-hero {
-  background: #2454d6;
+  background: var(--hero-bg);
   border-radius: 19px;
   display: grid;
   grid-template-columns: 1.2fr 1fr;
   min-height: 254px;
   padding: 37px 40px;
-  color: white;
+  color: var(--on-primary);
   overflow: hidden;
   position: relative;
   margin-bottom: 36px;
@@ -121,7 +121,7 @@
   border-radius: 50%;
 }
 .hero-ticket {
-  background: #fefeff;
+  background: var(--surface-raised);
   width: 280px;
   color: var(--ink);
   border-radius: 13px;
@@ -136,8 +136,8 @@
   align-items: center;
   justify-content: space-between;
   padding-bottom: 14px;
-  border-bottom: 1px dashed #d7e1ef;
-  color: #596b85;
+  border-bottom: 1px dashed var(--illustration-line);
+  color: var(--muted);
 }
 .hero-ticket h3 {
   font-size: 12px;
@@ -149,20 +149,20 @@
   align-items: center;
   padding: 9px 0;
   font-size: 10px;
-  color: #526782;
+  color: var(--illustration-ink);
 }
 .hero-check {
   height: 20px;
   width: 20px;
-  background: #e6f3ec;
+  background: var(--illustration-check);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #398163;
+  color: var(--illustration-check-ink);
 }
 .hero-ticket-row:last-child .hero-check {
-  background: #edf2fe;
+  background: var(--blue-wash);
   color: var(--blue);
 }
 .hero-float {
@@ -201,16 +201,16 @@
   gap: 23px;
 }
 .help-card {
-  background: #e8eefb;
+  background: var(--help-bg);
   border-radius: 13px;
   padding: 25px 23px;
 }
 .help-icon {
-  color: #4267b7;
+  color: var(--icon-blue);
   width: 40px;
   height: 40px;
-  background: #f7f9ff;
-  border: 1px solid #d5e0f4;
+  background: var(--help-icon-bg);
+  border: 1px solid var(--help-border);
   border-radius: 11px;
   display: flex;
   align-items: center;
@@ -225,7 +225,7 @@
 }
 .help-card p {
   font-size: 11px;
-  color: #596b85;
+  color: var(--muted);
   line-height: 1.95;
   margin-bottom: 22px;
 }
@@ -240,12 +240,12 @@
   display: flex;
   gap: 12px;
   padding: 0 4px;
-  color: #596b85;
+  color: var(--muted);
 }
 .privacy-card h3 {
   font-size: 11px;
   margin-bottom: 6px;
-  color: #4c607c;
+  color: var(--help-ink);
 }
 .privacy-card p {
   font-size: 10px;
@@ -292,6 +292,7 @@
   margin-top: 22px;
 }
 .help-dialog {
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 16px;
   padding: 30px;
@@ -300,7 +301,7 @@
   color: var(--ink);
 }
 .help-dialog::backdrop {
-  background: #182b4970;
+  background: var(--overlay);
 }
 .help-dialog h2 {
   font-size: 23px;

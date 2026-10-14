@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 5173",
-    "build": "vite build"
+    "build": "vite build",
+    "prebuild": "node ../../scripts/prepare-assets.mjs customer",
+    "predev": "node ../../scripts/prepare-assets.mjs customer"
   },
   "dependencies": {
     "@wasl/shared": "1.0.0",

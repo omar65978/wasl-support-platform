@@ -1,3 +1,4 @@
+import { ThemeToggleComponent } from './theme-toggle.component';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { applicationUrl } from '@wasl/shared';
@@ -6,7 +7,7 @@ import { IconComponent } from './icon.component';
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [FormsModule, IconComponent],
+  imports: [ThemeToggleComponent, FormsModule, IconComponent],
   template: `
     <main class="auth-page">
       <section class="auth-story">
@@ -38,14 +39,17 @@ import { IconComponent } from './icon.component';
         </div>
       </section>
       <section class="auth-main">
-        <button
-          class="btn btn-quiet auth-language"
-          (click)="s.toggleLanguage()"
-          [attr.aria-label]="s.t('switchLanguage')"
-        >
-          <app-icon name="globe" [size]="16" />
-          {{ s.t('language') }}
-        </button>
+        <div class="auth-preferences">
+          <app-theme-toggle />
+          <button
+            class="btn btn-quiet"
+            (click)="s.toggleLanguage()"
+            [attr.aria-label]="s.t('switchLanguage')"
+          >
+            <app-icon name="globe" [size]="16" />
+            {{ s.t('language') }}
+          </button>
+        </div>
         <div class="auth-form">
           <h2>{{ s.t('loginTitle') }}</h2>
           <p>{{ s.t('supportWorkspace') }}</p>

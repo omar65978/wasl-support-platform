@@ -10,6 +10,10 @@ import {
 } from 'react';
 import {
   AuthController,
+  getTheme,
+  subscribeTheme,
+  toggleTheme,
+  type Theme,
   Repository,
   errorKey,
   getLanguage,
@@ -22,12 +26,15 @@ export const auth = new AuthController('customer');
 export const api = new Repository(auth);
 const Context = createContext<null | {
   lang: Language;
+  theme: Theme;
+  toggleTheme: () => void;
   toggleLanguage: () => void;
   t: (key: TranslationKey) => string;
   notify: (key: TranslationKey) => void;
 }>(null);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [lang, updateLanguage] = useState(getLanguage);
+  const theme = useSyncExternalStore(subscribeTheme, getTheme);
   const [toast, setToast] = useState<TranslationKey | null>(null);
   useEffect(() => {
     setLanguage(lang);
@@ -54,6 +61,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <Context.Provider
       value={{
         lang,
+        theme,
+        toggleTheme,
         t,
         toggleLanguage: () => updateLanguage(lang === 'en' ? 'ar' : 'en'),
         notify: setToast,

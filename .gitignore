@@ -13,3 +13,8 @@ coverage/
 .DS_Store
 supabase/.temp/
 supabase/.branches/
+
+apps/customer/public/theme-init.js
+apps/support/public/theme-init.js
+site/
+.vercel/

@@ -1,3 +1,4 @@
+import { ThemeToggle } from './ThemeToggle';
 import { useState, type FormEvent } from 'react';
 import {
   ArrowUpRight,
@@ -80,14 +81,17 @@ export function AuthPage() {
         </div>
       </section>
       <section className="auth-main">
-        <button
-          className="btn btn-quiet auth-language"
-          onClick={toggleLanguage}
-          aria-label={t('switchLanguage')}
-        >
-          <Globe2 size={16} />
-          {t('language')}
-        </button>
+        <div className="auth-preferences">
+          <ThemeToggle />
+          <button
+            className="btn btn-quiet"
+            onClick={toggleLanguage}
+            aria-label={t('switchLanguage')}
+          >
+            <Globe2 size={16} />
+            {t('language')}
+          </button>
+        </div>
         <div className="auth-form">
           <h2>{t(register ? 'register' : 'loginTitle')}</h2>
           <p>{t('loginBody')}</p>
