@@ -1,4 +1,5 @@
 import { supabase } from './client';
+import { applicationUrl } from './config';
 import { demoProfile } from './demo';
 import type { Profile, Role } from './types';
 export interface AuthState {
@@ -72,7 +73,10 @@ export class AuthController {
     const { error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
-      options: { data: { full_name: name.trim() } },
+      options: {
+        data: { full_name: name.trim() },
+        emailRedirectTo: new URL(applicationUrl('customer'), window.location.origin).href,
+      },
     });
     if (error) throw error;
   }

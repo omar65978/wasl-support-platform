@@ -5,6 +5,6 @@ export const supabase = createClient(config.supabaseUrl, config.supabasePublisha
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
-    storageKey: 'wasl:auth',
+    storageKey: `wasl:auth:${new URL(config.supabaseUrl).hostname}`,
   },
 });

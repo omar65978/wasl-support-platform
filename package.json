@@ -18,7 +18,9 @@
     "config": "node scripts/configure.mjs",
     "verify": "npm run build && npm test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "predev": "npm run config",
+    "prebuild": "npm run config"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

@@ -6,7 +6,7 @@ Supabase provides PostgreSQL, Auth, and private Storage. Both applications conne
 
 ## SQL Editor setup
 
-1. Open project `iaukydzbcdmglqajllei` in your Supabase dashboard.
+1. Open project `vbsrwnjyiskbjangbohb` in your Supabase dashboard.
 2. Confirm this is the intended project and back up existing data.
 3. Open SQL Editor, create a query, paste the complete `supabase/setup.sql`, and run it.
 4. Confirm that `profiles`, `requests`, `messages`, `activities`, and `attachments` exist with RLS enabled.
@@ -87,7 +87,7 @@ For a project that has not received the SQL setup:
 
 ```bash
 npx supabase login
-npx supabase link --project-ref iaukydzbcdmglqajllei
+npx supabase link --project-ref vbsrwnjyiskbjangbohb
 npx supabase db push
 ```
 

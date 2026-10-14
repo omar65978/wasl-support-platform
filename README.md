@@ -88,7 +88,7 @@ Both use the same Supabase project. Authentication storage is origin-scoped, so 
 The supplied project configuration is already in `packages/shared/src/config.ts`:
 
 ```text
-https://iaukydzbcdmglqajllei.supabase.co
+https://vbsrwnjyiskbjangbohb.supabase.co
 ```
 
 1. Open your Supabase project's **SQL Editor**.
