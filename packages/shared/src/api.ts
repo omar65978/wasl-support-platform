@@ -60,7 +60,7 @@ export class Repository {
   async upload(id: string, file: File, internal = false) {
     await validateFile(file);
     if (this.isDemo) throw new Error('DEMO_FILES');
-    const { data,error } = await supabase.rpc('reserve_attachment', { p_id:id, p_name:file.name, p_mime:file.type, p_size:file.size, p_internal:internal });
+    const { data,error } = await supabase.rpc('reserve_attachment', { p_id:id, p_name:file.name, p_mime:file.type, p_size:file.size, p_internal:internal }).single();
     if (error) throw error;
     const attachment = data as Attachment;
     try {

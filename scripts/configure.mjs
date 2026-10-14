@@ -5,6 +5,6 @@ const url=env.SUPABASE_URL;const key=env.SUPABASE_PUBLISHABLE_KEY;
 if(!url?.startsWith('https://')||!key?.startsWith('sb_publishable_'))throw new Error('Provide a valid HTTPS Supabase URL and sb_publishable_ key. Never use a secret or service-role key.');
 const target=new URL('../packages/shared/src/config.ts',import.meta.url);
 const existing=await readFile(target,'utf8');
-const output=existing.replace(/supabaseUrl:\s*'[^']*'/,`supabaseUrl: ${JSON.stringify(url)}`).replace(/supabasePublishableKey:\s*'[^']*'/,`supabasePublishableKey: ${JSON.stringify(key)}`);
+const output=existing.replace(/supabaseUrl:\s*['"][^'"]*['"]/,`supabaseUrl: ${JSON.stringify(url)}`).replace(/supabasePublishableKey:\s*['"][^'"]*['"]/,`supabasePublishableKey: ${JSON.stringify(key)}`);
 await writeFile(target,output);
 console.log('Public configuration updated. Rebuild both applications. No admin keys are included.');

@@ -1,0 +1,10 @@
+node_modules
+package-lock.json
+dist
+.angular
+playwright-report
+test-results
+docs/screenshots
+supabase/*.sql
+supabase/migrations/*.sql
+*.bundle

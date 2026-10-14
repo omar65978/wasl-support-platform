@@ -8,6 +8,7 @@ test-results/
 .env.*
 !.env.example
 !.env.seed.example
+!.env.live.example
 coverage/
 .DS_Store
 supabase/.temp/

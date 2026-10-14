@@ -122,7 +122,7 @@ begin
   v_role := public.current_role();
   if not public.can_view_request(p_id) then raise exception 'FORBIDDEN'; end if;
   select * into r from public.requests where id = p_id for update;
-  if r.version <> p_version then raise exception 'CONFLICT'; end if;
+  if p_version is null or r.version <> p_version then raise exception 'CONFLICT'; end if;
   if p_action = 'reopen' then
     if r.status <> 'resolved' then raise exception 'INVALID_STATE'; end if;
     if v_role = 'agent' and r.assigned_to is distinct from auth.uid() then raise exception 'NOT_OWNER'; end if;
@@ -164,7 +164,7 @@ begin
   if not public.can_view_request(p_id) then raise exception 'FORBIDDEN'; end if;
   select * into r from public.requests where id = p_id for update;
   v_role := public.current_role();
-  if r.version <> p_version then raise exception 'CONFLICT'; end if;
+  if p_version is null or r.version <> p_version then raise exception 'CONFLICT'; end if;
   if r.status = 'resolved' then raise exception 'REQUEST_CLOSED'; end if;
   if p_internal and v_role not in ('agent', 'manager') then raise exception 'FORBIDDEN'; end if;
   if v_role = 'agent' and r.assigned_to is distinct from auth.uid() then raise exception 'NOT_OWNER'; end if;
@@ -198,18 +198,18 @@ values ('request-attachments', 'request-attachments', false, 5242880, array['app
 create policy attachment_upload on storage.objects for insert to authenticated with check (
   bucket_id = 'request-attachments' and exists (
     select 1 from public.attachments a join public.requests r on r.id = a.request_id
-    where a.storage_path = name and a.uploader_id = auth.uid() and not a.ready and r.status <> 'resolved'
+    where a.storage_path = storage.objects.name and a.uploader_id = auth.uid() and not a.ready and r.status <> 'resolved'
     and (public.current_role() <> 'agent' or r.assigned_to = auth.uid())
   )
 );
 create policy attachment_download on storage.objects for select to authenticated using (
   bucket_id = 'request-attachments' and exists (
-    select 1 from public.attachments a where a.storage_path = name and a.ready and public.can_view_request(a.request_id)
+    select 1 from public.attachments a where a.storage_path = storage.objects.name and a.ready and public.can_view_request(a.request_id)
     and (not a.internal or public.current_role() in ('agent', 'manager'))
   )
 );
 create policy attachment_cancel on storage.objects for delete to authenticated using (
-  bucket_id = 'request-attachments' and exists (select 1 from public.attachments a where a.storage_path = name and a.uploader_id = auth.uid() and not a.ready)
+  bucket_id = 'request-attachments' and exists (select 1 from public.attachments a where a.storage_path = storage.objects.name and a.uploader_id = auth.uid() and not a.ready)
 );
 
 create function public.finish_attachment(p_id uuid, p_cancel boolean default false)
