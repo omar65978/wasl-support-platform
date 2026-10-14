@@ -117,20 +117,20 @@ A customer reply to a waiting request returns it to investigation. Resolving req
 
 ### Permission summary
 
-| Capability                 | Customer              | Agent                      | Manager              |
-| -------------------------- | --------------------- | -------------------------- | -------------------- |
-| Read requests              | Own requests          | All requests               | All requests         |
-| Create requests            | Yes                   | No                         | No                   |
-| Claim unassigned work      | No                    | Yes                        | Yes                  |
-| Reply and upload files     | Own active requests   | Assigned active requests   | Any active request   |
-| Read internal notes        | No                    | Yes                        | Yes                  |
-| Add internal notes         | No                    | Assigned active requests   | Any active request   |
-| Update progress or resolve | No                    | Assigned requests          | Any assigned request |
-| Reopen requests            | Own resolved requests | Assigned resolved requests | Any resolved request |
-| Reassign responsibility    | No                    | No                         | Yes                  |
-| View workload reports      | No                    | No                         | Yes                  |
+| Capability                              | Customer              | Agent                      | Manager                     |
+| --------------------------------------- | --------------------- | -------------------------- | --------------------------- |
+| Read requests                           | Own requests          | All requests               | All requests                |
+| Create requests                         | Yes                   | No                         | No                          |
+| Claim unassigned work                   | No                    | Yes                        | Yes                         |
+| Reply and upload files                  | Own active requests   | Assigned active requests   | Any active request          |
+| Read internal notes                     | No                    | Yes                        | Yes                         |
+| Add internal notes                      | No                    | Assigned active requests   | Any active request          |
+| Update progress, urgency, or resolution | No                    | Assigned active requests   | Any assigned active request |
+| Reopen requests                         | Own resolved requests | Assigned resolved requests | Any resolved request        |
+| Reassign responsibility                 | No                    | No                         | Yes                         |
+| View workload reports                   | No                    | No                         | Yes                         |
 
-An unassigned request must be claimed or assigned before replying through the support interface. Detailed lifecycle rules and ownership assumptions are documented in [ARCHITECTURE.md](docs/ARCHITECTURE.md).
+In the agent column, "assigned" means assigned to that agent. "Active" means not resolved. Progress, urgency, and resolution changes require an assigned request in progress or waiting for the customer. An unassigned request must be claimed or assigned before replying through the support interface. Detailed lifecycle rules and ownership assumptions are documented in [ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Quick start
 
@@ -303,6 +303,7 @@ apps/
   support/                  Angular support workspace
 packages/shared/src/
   auth.ts                   Authentication state and account operations
+  recovery.ts               Recovery callback parsing and credential handling
   api.ts                    Shared data access and attachment workflow
   types.ts                  Roles, request models, and validation
   i18n.ts                   English and Arabic interface copy
@@ -322,16 +323,21 @@ vercel.json                 Combined static deployment configuration
 
 ## Documentation
 
-| Guide                                            | Purpose                                                        |
-| ------------------------------------------------ | -------------------------------------------------------------- |
-| [Architecture](docs/ARCHITECTURE.md)             | Auth, permissions, data access, concurrency, and scaling       |
-| [Backend setup](docs/BACKEND.md)                 | Database initialization, test accounts, and Storage            |
-| [Workflow walkthrough](docs/DEMO.md)             | Customer, agent, and manager demonstration                     |
-| [Verification record](docs/VERIFICATION.md)      | Executed checks and verification boundaries                    |
-| [Vercel deployment](docs/VERCEL.md)              | Build settings, environment variables, and authentication URLs |
-| [Design decisions](docs/DESIGN.md)               | Visual direction, typography, and appearance modes             |
-| [Requirement traceability](docs/REQUIREMENTS.md) | Requirements mapped to implementation and tests                |
-| [Arabic guide](docs/HANDOFF-AR.md)               | Setup and deployment instructions in Arabic                    |
+| Guide                                              | Purpose                                                                   |
+| -------------------------------------------------- | ------------------------------------------------------------------------- |
+| [Architecture](docs/ARCHITECTURE.md)               | Auth, permissions, data access, concurrency, and scaling                  |
+| [Backend setup](docs/BACKEND.md)                   | Database initialization, test accounts, and Storage                       |
+| [Password recovery](docs/PASSWORD-RECOVERY.md)     | Reset links, redirect configuration, email templates, and troubleshooting |
+| [Workflow walkthrough](docs/DEMO.md)               | Customer, agent, and manager demonstration                                |
+| [Verification record](docs/VERIFICATION.md)        | Current evidence, historical results, and verification boundaries         |
+| [Vercel deployment](docs/VERCEL.md)                | Build settings, environment variables, and authentication URLs            |
+| [Repository workflow](docs/GITHUB.md)              | Cloning, focused commits, checks, and publishing changes                  |
+| [Contributing](CONTRIBUTING.md)                    | Development workflow and pull request expectations                        |
+| [Optional packaging](docs/PACKAGING.md)            | Reproducible source/build archives and Git bundles                        |
+| [Design decisions](docs/DESIGN.md)                 | Visual direction, typography, and appearance modes                        |
+| [Requirement traceability](docs/REQUIREMENTS.md)   | Requirements mapped to implementation and tests                           |
+| [Arabic guide](docs/HANDOFF-AR.md)                 | Current setup, update, and deployment instructions in Arabic              |
+| [Historical documentation](docs/history/README.md) | Earlier records retained for context and traceability                     |
 
 ## Operational limits
 

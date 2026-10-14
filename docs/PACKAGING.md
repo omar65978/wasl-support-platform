@@ -1,6 +1,40 @@
-# Reproducing the delivery archive
+# Optional source and build archives
 
-The archive contains:
+Normal development starts with a clone of the active repository and a local build. An archive is an optional distribution or backup format, not a prerequisite for running or publishing the application.
+
+The packaging script is `scripts/package-delivery.py`. It requires Python 3 and Git in addition to Node.js 22.x and npm 10 or later, and uses only the Python standard library.
+
+## Prepare a release snapshot
+
+From the repository root:
+
+```bash
+npm ci
+npm run format:check
+npm run verify
+npx playwright install --with-deps chromium
+npm run test:e2e
+npm run build:vercel
+git status --short
+```
+
+Review and commit intended source changes before packaging. The script refuses a dirty working tree and private tracked `.env` files. Its guard is not a comprehensive secret scanner: inspect the tracked files and Git history before sharing an archive.
+
+Create the archive:
+
+```bash
+python3 scripts/package-delivery.py
+```
+
+On Windows, if Python is installed through the Python launcher, use:
+
+```bat
+py scripts/package-delivery.py
+```
+
+The default output is a sibling `deliverables/` directory. An optional argument selects another output directory; keep it outside the source tree.
+
+## What is included
 
 ```text
 Wasl-Delivery/
@@ -18,36 +52,32 @@ Wasl-Delivery/
     docs/
 ```
 
-The source folder includes both compiled application builds, so `node scripts/serve.mjs` can serve them without installing npm packages. Git intentionally excludes these generated files; cloning the bundle requires a normal build.
+The script retains these existing archive names for compatibility. The source directory contains Git-tracked files plus both compiled application builds. The Git bundle carries history. Generated dependencies, private environment files, test reports, and the original `.git/config` are not added as standalone files.
 
-## Create the package
+The bundle is created with `--all`, so it includes all local refs selected by Git, not just the current branch. Inspect refs and reachable history before distributing it; files deleted in later commits may still exist in the bundle's history. Never package a repository with committed secrets. Revoke exposed credentials rather than relying on deleting the latest copy.
 
-The optional packaging tool needs Python 3 and Git in addition to the normal Node toolchain. It uses only the Python standard library.
+The output filename follows `package.json`: `Wasl-Support-Platform-v<VERSION>.zip`. This does not create a Git tag or publish a release. Keep package version, release notes, tags, and uploaded assets consistent when actually preparing a release.
 
-```bash
-npm ci
-npm run verify
-npm run test:e2e
-npm run format:check
-git status --short
-python3 scripts/package-delivery.py
-```
+## Verify the archive
 
-Commit any intended source changes before packaging. The script refuses a dirty repository and refuses tracked private `.env` files. It packages only Git-tracked source, the two production build folders, documentation, and the verified Git bundle. It does not include `node_modules`, admin credentials, local Auth state, test reports, or the original `.git/config`.
+The generated manifest records the source commit and per-file SHA-256 hashes. `SHA256SUMS.txt` records the ZIP checksum.
 
-By default, the archive, standalone bundle, and checksum are written to a sibling `deliverables/` directory. An optional first argument selects another output directory.
-
-The manifest records the source commit and per-file SHA-256 hashes. `SHA256SUMS.txt` records the complete ZIP hash. The bundle preserves all supplied commits and can be cloned using standard Git.
-
-## Verify a download
+On a shell with `sha256sum`:
 
 ```bash
 sha256sum -c SHA256SUMS.txt
-git bundle verify wasl-support.bundle
 ```
 
-Run the checksum command from the download directory and the bundle command from an initialized Git repository, or clone the bundle directly. On PowerShell, use `Get-FileHash Wasl-Support-Platform-v1.1.0.zip -Algorithm SHA256` and compare its value with the checksum file.
+On PowerShell, use `Get-FileHash` with the actual generated filename and compare it with `SHA256SUMS.txt`.
 
-## Archive versus repository
+To inspect the preserved history, run `git bundle verify` from an initialized Git repository, or clone the bundle into a new directory:
 
-Use the source folder for immediate preview. Use `git clone wasl-support.bundle wasl-platform` for development and publication with history. They represent the same source commit; the archive adds generated builds for convenience.
+```bash
+git clone -b main wasl-support.bundle wasl-platform-copy
+```
+
+That clone needs `npm ci` and `npm run build` before previewing. The archive's compiled source folder can instead run `node scripts/serve.mjs` directly if the compiled assets are present.
+
+A Git bundle is not a backup of hosted issues, pull requests, account permissions, deployment settings, Auth users, or database contents. Back up those systems separately where required.
+
+The [previous packaging guide](history/before-refresh-PACKAGING.md) is retained as a historical record.

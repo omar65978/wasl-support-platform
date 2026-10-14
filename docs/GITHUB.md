@@ -1,94 +1,99 @@
-# Publishing to GitHub
+# Repository workflow
 
-## Preserve the supplied history
+The active repository is [omar65978/wasl-support-platform](https://github.com/omar65978/wasl-support-platform). Its name does not need to match the production hostname, which remains `wasl-support-platform-v2.vercel.app`.
 
-The delivery includes an incrementally created Git history. The companion `wasl-support.bundle` contains the branch and its commits without requiring hidden `.git` files to survive ZIP extraction.
-
-From the extracted delivery directory:
+## Clone and run
 
 ```bash
-git clone wasl-support.bundle wasl-platform
-cd wasl-platform
-git log --oneline --reverse
+git clone https://github.com/omar65978/wasl-support-platform.git
+cd wasl-support-platform
+npm ci
+npm run build
+npm run preview
 ```
 
-This creates a normal working repository on `main`. Source files are included separately in the archive for immediate browsing; cloning the bundle is the recommended publishing path. Generated production assets are intentionally absent from Git and can be rebuilt.
+Use Node.js 22.x and npm 10 or later. The application URLs are `/customer/` and `/support/` on `http://localhost:4173`.
 
-## Configure your identity for future work
+A normal clone contains source and history, not compiled applications. Run the build before previewing. Do not run `git init` inside an existing clone or restore an older bundle over ongoing work.
+
+## Existing clones after the repository rename
+
+Check your remotes before changing them:
+
+```bash
+git remote -v
+```
+
+If your intended upstream is the active repository above but `origin` still uses its previous name, update it:
+
+```bash
+git remote set-url origin https://github.com/omar65978/wasl-support-platform.git
+```
+
+Contributors working through a fork should keep their own fork as the push remote.
+
+## Configure commit identity
+
+Set your real preferred Git name and an email verified on your account, or use the exact private noreply address provided by GitHub:
 
 ```bash
 git config user.name "Your Name"
-git config user.email "your-email@example.com"
+git config user.email "your-verified-email@example.com"
 ```
 
-Existing commits retain their actual delivery author and timestamps. Do not rewrite them to imply that someone else authored the work. New changes will use your identity.
+These settings affect future commits in this clone. Commit identity records metadata, not whether code was written manually or with assistance. Keep messages and descriptions accurate; do not fabricate development dates or rewrite others' contributions to imply sole authorship.
 
-## Create an empty remote repository
+Use your credential manager, browser authentication, or SSH for authentication. Never embed a token in the remote URL, documentation, or source.
 
-On GitHub, choose **New repository**, select your visibility and repository name, and leave automatic README, license, and `.gitignore` creation **disabled**. The repository already contains its README and ignore rules.
+## Make and verify a focused change
 
-Then replace `YOUR_USERNAME` and `YOUR_REPOSITORY` below:
+Start from a clean working tree. Save existing changes before pulling; do not discard them to make an update succeed.
 
 ```bash
-git remote remove origin
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-git branch -M main
-git push -u origin main
+git status
+git pull --ff-only origin main
 ```
 
-The clone's old `origin` points to the local bundle, which is why it is removed first. Use GitHub's browser/device sign-in, credential manager, SSH, or a scoped token stored by your Git client. Never put a token in the remote URL or commit it.
+If the pull refuses because histories diverged, inspect and reconcile the changes rather than force-pushing.
 
-**One push publishes every existing commit.** Multiple commits do not require multiple uploads or repeated pushes. Do not squash the supplied history if your evaluation expects incremental work.
-
-## Commit structure
-
-The initial delivery uses ten logical commits spanning:
-
-1. Workspace scaffolding and initial dependency setup.
-2. Shared models and database authorization/lifecycle.
-3. React customer workflows and bilingual visual foundation.
-4. Angular support operations and manager experience.
-5. Database security tests, browser workflows, and live verification tooling.
-6. Quality fixes, contrast, concurrency hardening, and consistent formatting.
-7. Architecture, backend setup, requirements, and demonstration documentation.
-8. Deployment, CI, and publication instructions.
-9. Final verification and tested UX/security refinements.
-10. Reproducible delivery packaging and handoff records.
-
-Release 1.1 preserves those ten commits and adds four focused commits for the new Supabase project, persistent light/dark themes, Vercel build configuration, and updated handoff records. The updated bundle contains fourteen commits.
-
-If you already published the original history without additional commits, the new branch is a normal fast-forward update. If your remote has additional work, fetch and merge/rebase that work first; do not force-push over it.
-
-Use `git log --oneline --reverse` to inspect the exact commit messages. This number is appropriate for a two-application milestone delivery: the commits represent actual work boundaries rather than arbitrary file splitting.
-
-## Verify before publishing
+After making a change:
 
 ```bash
-npm ci
+npm run format
 npm run format:check
 npm run verify
+npm run build:vercel
 npx playwright install --with-deps chromium
 npm run test:e2e
+git --no-pager diff
 git status --short
-git ls-files ".env*"
 ```
 
-The last command should show only `.env.example`, `.env.seed.example`, and `.env.live.example`. No real passwords, `.env.seed`, `.env.live`, database URIs with credentials, or admin keys should be tracked.
-
-GitHub Actions runs formatting, production builds, SQL/unit tests, browser tests, and the production dependency audit. It does not execute the hosted integration suite because that suite needs private test-user credentials and a configured test project.
-
-## Later changes
-
-Keep commits focused and describe the actual change:
+Stage only the intended files. For example, for a customer-interface change:
 
 ```bash
 git add apps/customer/src
+git --no-pager diff --cached --stat
+git diff --cached --check
 git commit -m "fix(customer): improve request validation feedback"
-git push
 ```
 
-Before staging, inspect `git diff`. Avoid uploading `node_modules`, generated builds, test reports, or private environment files. If a secret is accidentally committed, revoke/rotate it first; simply deleting it in a later commit does not remove it from history.
+Maintainers with write access can push the intended branch. External contributors should use a feature branch on a fork and open a pull request. See [Contributing](../CONTRIBUTING.md).
 
-## Starting without the bundle
+## Before publishing
 
-If organizational policy requires a new repository, `git init` on the source folder is possible, but it discards the implementation history. Do not recreate artificial development dates or claim a one-commit import is the original history. Prefer the bundle unless there is a specific reason not to preserve it.
+```bash
+git ls-files ".env*"
+```
+
+Only `.env.example`, `.env.seed.example`, and `.env.live.example` should appear. Private environment files, admin credentials, account passwords, local Auth state, `node_modules`, compiled output, and test reports must not be committed.
+
+The repository's `.gitattributes` normalizes detected text files to LF. Use `npm run format` to align local formatting. Line-ending warnings are not evidence of a failed application build.
+
+The Actions workflow checks formatting, builds, SQL/unit tests, Chromium workflows, and high-or-higher production dependency advisories. A successful push is not the same as a successful deployment: inspect Actions and the corresponding Vercel Production deployment.
+
+## Optional bundles and archives
+
+A Git bundle is useful for offline backups or transferring history, but it is not required for normal development. Follow [Optional packaging](PACKAGING.md) when creating one. One push transfers all reachable commits; the number of pushes is not the number of commits.
+
+Earlier bundle-based setup instructions and their original context are preserved in [Historical documentation](history/README.md). They are not the recommended update path for an existing clone.
