@@ -8,3 +8,7 @@ docs/screenshots
 supabase/*.sql
 supabase/migrations/*.sql
 *.bundle
+
+site
+apps/customer/public/theme-init.js
+apps/support/public/theme-init.js

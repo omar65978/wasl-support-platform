@@ -14,9 +14,10 @@ const mime = {
   '.ico': 'image/x-icon',
   '.json': 'application/json',
 };
+const site = process.env.WASL_SITE_DIR;
 const roots = {
-  customer: path.join(root, 'apps/customer/dist'),
-  support: path.join(root, 'apps/support/dist/browser'),
+  customer: path.join(root, site ? `${site}/customer` : 'apps/customer/dist'),
+  support: path.join(root, site ? `${site}/support` : 'apps/support/dist/browser'),
 };
 const server = http.createServer(async (request, response) => {
   response.setHeader('X-Content-Type-Options', 'nosniff');
@@ -63,7 +64,9 @@ const server = http.createServer(async (request, response) => {
     response.setHeader('Content-Type', mime[path.extname(target)] || 'application/octet-stream');
     response.setHeader(
       'Cache-Control',
-      target.endsWith('.html') ? 'no-store' : 'public, max-age=31536000, immutable',
+      target.endsWith('.html') || target.endsWith('theme-init.js')
+        ? 'no-store'
+        : 'public, max-age=31536000, immutable',
     );
     response.writeHead(200);
     response.end(request.method === 'HEAD' ? undefined : content);

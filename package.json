@@ -20,7 +20,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "predev": "npm run config",
-    "prebuild": "npm run config"
+    "prebuild": "npm run config",
+    "build:vercel": "npm run build && node scripts/prepare-vercel.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
