@@ -136,7 +136,7 @@ An unassigned request must be claimed or assigned before replying through the su
 
 ### Requirements
 
-- **Node.js 22 LTS recommended.** The current package configuration permits Node.js 20.19 or later; see the individual framework requirements when choosing another release.
+- **Node.js 22.x**, matching the repository's engine requirement and CI runtime.
 - **npm 10 or later.**
 - Git to clone the repository.
 - A configured Supabase project for signed-in workflows; no backend setup is needed for the browser-local demo.
