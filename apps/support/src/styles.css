@@ -818,3 +818,12 @@
     font-size: 12px;
   }
 }
+
+@media (max-width: 760px) {
+  .workspace-sidebar {
+    visibility: hidden;
+  }
+  .workspace-sidebar.open {
+    visibility: visible;
+  }
+}

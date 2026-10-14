@@ -7,10 +7,8 @@ import {
   ChevronRight,
   CircleHelp,
   CreditCard,
-  FileText,
   Globe2,
   Inbox,
-  LockKeyhole,
   MessageSquare,
   Plus,
   Search,
@@ -27,7 +25,6 @@ import {
   formatDate,
   type Category,
   type RequestFilters,
-  type Status,
 } from '@wasl/shared';
 import { api, ErrorNotice, Loading, useApp, useAuth, useDebounce, useResource } from './context';
 const categoryIcons = {

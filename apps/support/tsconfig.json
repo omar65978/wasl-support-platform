@@ -8,7 +8,9 @@
     "strict": true,
     "skipLibCheck": true,
     "lib": ["ES2022", "DOM"],
-    "outDir": "./dist/out-tsc"
+    "outDir": "./dist/out-tsc",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "angularCompilerOptions": {
     "strictTemplates": true

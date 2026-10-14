@@ -58,7 +58,12 @@
               "buildTarget": "support:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "prebundle": {
+              "exclude": ["@wasl/shared"]
+            }
+          }
         }
       }
     }

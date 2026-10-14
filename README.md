@@ -223,8 +223,8 @@ supabase/
   setup.sql                 SQL Editor entry point
   migrations/               Versioned backend schema
 scripts/                    Configuration, accounts, preview, live verification
- tests/                     Database, unit, and browser suites
- docs/                      Architecture, setup, review, deployment, GitHub guide
+tests/                     Database, unit, and browser suites
+docs/                      Architecture, setup, review, deployment, GitHub guide
 ```
 
 ## Review and delivery guides

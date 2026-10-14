@@ -119,7 +119,7 @@
             class="icon-btn mobile-menu"
             [attr.aria-label]="s.t('workspace')"
             [attr.aria-expanded]="menuOpen"
-            (click)="menuOpen = !menuOpen"
+            (click)="toggleMenu()"
           >
             <app-icon name="menu" />
           </button>

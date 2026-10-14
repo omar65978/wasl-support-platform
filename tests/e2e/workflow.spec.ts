@@ -156,14 +156,20 @@ test('both workspaces remain usable in Arabic on a small screen', async ({ page 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
     true,
   );
-  await page.screenshot({ path: 'docs/screenshots/customer-arabic-mobile.png', fullPage: true });
+  await page.screenshot({
+    path: test.info().outputPath('customer-arabic-mobile.png'),
+    fullPage: true,
+  });
   await page.goto('/support/');
   await page.getByRole('button', { name: 'جرّب كمدير' }).click();
   await expect(page.getByRole('heading', { name: 'كل الطلبات', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
     true,
   );
-  await page.screenshot({ path: 'docs/screenshots/support-arabic-mobile.png', fullPage: true });
+  await page.screenshot({
+    path: test.info().outputPath('support-arabic-mobile.png'),
+    fullPage: true,
+  });
   await page.getByRole('button', { name: 'مساحة العمل', exact: true }).click();
   await page.getByRole('link', { name: 'نظرة على عبء العمل', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'عبء عمل الفريق', exact: true })).toBeVisible();
@@ -194,4 +200,43 @@ test('dialogs support keyboard dismissal and return focus', async ({ page }) => 
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).not.toBeVisible();
   await expect(help).toBeFocused();
+});
+
+test('mobile navigation traps focus and closes with Escape', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await support(page, true);
+  const menu = page.getByRole('button', { name: 'Workspace', exact: true });
+  await menu.click();
+  await expect(page.locator('.workspace-sidebar a').first()).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.getByRole('button', { name: 'Sign out', exact: true })).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('.workspace-sidebar a').first()).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(menu).toBeFocused();
+  await expect(page.locator('.workspace-sidebar')).not.toBeVisible();
+});
+
+test('detail, sign-in and manager report pass representative accessibility checks', async ({
+  page,
+}) => {
+  await page.goto('/customer/');
+  expect(
+    (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze())
+      .violations,
+  ).toEqual([]);
+  await page.getByRole('button', { name: 'Try as a customer' }).click();
+  await page
+    .getByRole('link', { name: 'Unable to download my monthly invoice', exact: true })
+    .click();
+  expect(
+    (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze())
+      .violations,
+  ).toEqual([]);
+  await support(page, true);
+  await page.getByRole('link', { name: 'Workload overview', exact: true }).click();
+  expect(
+    (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze())
+      .violations,
+  ).toEqual([]);
 });

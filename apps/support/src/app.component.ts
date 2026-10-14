@@ -1,4 +1,4 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, HostListener, effect, inject } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { applicationUrl } from '@wasl/shared';
 import { AppState } from './state';
@@ -35,8 +35,36 @@ export class AppComponent {
       this.error = e;
     }
   }
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+    if (this.menuOpen)
+      setTimeout(() => document.querySelector<HTMLElement>('.workspace-sidebar a')?.focus());
+  }
   closeMenu() {
+    const wasOpen = this.menuOpen;
     this.menuOpen = false;
+    if (wasOpen) document.querySelector<HTMLElement>('.mobile-menu')?.focus();
+  }
+  @HostListener('document:keydown', ['$event'])
+  handleMenuKeyboard(event: KeyboardEvent) {
+    if (!this.menuOpen) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.closeMenu();
+    }
+    if (event.key !== 'Tab') return;
+    const items = Array.from(
+      document.querySelectorAll<HTMLElement>('.workspace-sidebar a, .workspace-sidebar button'),
+    ).filter((element) => element.getClientRects().length > 0);
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last?.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first?.focus();
+    }
   }
   active(kind: string) {
     const url = this.router.url;

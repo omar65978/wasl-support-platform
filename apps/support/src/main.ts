@@ -1,31 +1,30 @@
 import { inject, provideZoneChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { CanActivateFn, Router, provideRouter, withHashLocation } from '@angular/router';
+import type { Role } from '@wasl/shared';
 import { AppComponent } from './app.component';
 import { AppState } from './state';
 import { AuthComponent } from './auth.component';
-const authenticated: CanActivateFn = () => {
-  const s = inject(AppState);
-  const router = inject(Router);
-  const evaluate = () => {
-    const p = s.session().profile;
-    return p && p.role !== 'customer' ? true : router.createUrlTree(['/sign-in']);
-  };
-  if (!s.session().loading) return evaluate();
-  return new Promise((resolve) => {
-    const unsubscribe = s.auth.subscribe(() => {
-      if (!s.auth.getSnapshot().loading) {
-        unsubscribe();
-        resolve(evaluate());
-      }
+function allowRoles(roles: Role[]): CanActivateFn {
+  return () => {
+    const s = inject(AppState);
+    const router = inject(Router);
+    const evaluate = () => {
+      const profile = s.auth.getSnapshot().profile;
+      if (!profile || profile.role === 'customer') return router.createUrlTree(['/sign-in']);
+      return roles.includes(profile.role) || router.createUrlTree(['/requests']);
+    };
+    if (!s.auth.getSnapshot().loading) return evaluate();
+    return new Promise((resolve) => {
+      const unsubscribe = s.auth.subscribe(() => {
+        if (!s.auth.getSnapshot().loading) {
+          unsubscribe();
+          resolve(evaluate());
+        }
+      });
     });
-  });
-};
-const manager: CanActivateFn = () => {
-  const s = inject(AppState);
-  const router = inject(Router);
-  return s.session().profile?.role === 'manager' || router.createUrlTree(['/requests']);
-};
+  };
+}
 bootstrapApplication(AppComponent, {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
@@ -34,17 +33,17 @@ bootstrapApplication(AppComponent, {
         { path: 'sign-in', component: AuthComponent },
         {
           path: 'requests',
-          canActivate: [authenticated],
+          canActivate: [allowRoles(['agent', 'manager'])],
           loadComponent: () => import('./queue.component').then((m) => m.QueueComponent),
         },
         {
           path: 'requests/:id',
-          canActivate: [authenticated],
+          canActivate: [allowRoles(['agent', 'manager'])],
           loadComponent: () => import('./detail.component').then((m) => m.DetailComponent),
         },
         {
           path: 'overview',
-          canActivate: [authenticated, manager],
+          canActivate: [allowRoles(['manager'])],
           loadComponent: () => import('./overview.component').then((m) => m.OverviewComponent),
         },
         { path: '', pathMatch: 'full', redirectTo: 'requests' },

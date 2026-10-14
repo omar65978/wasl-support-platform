@@ -79,7 +79,7 @@ Keep commits focused and describe the actual change:
 
 ```bash
 git add apps/customer/src
- git commit -m "fix(customer): improve request validation feedback"
+git commit -m "fix(customer): improve request validation feedback"
 git push
 ```
 
