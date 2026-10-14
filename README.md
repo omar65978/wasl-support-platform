@@ -1,79 +1,162 @@
 # Wasl | وصل
 
-### A clearer connection between customers and support teams.
+### Customer support, connected.
 
-A bilingual customer-support operations platform with a **React customer portal**, an **Angular support workspace**, and one shared **Supabase** backend. Built for the complete request lifecycle, not just a collection of screens.
+A bilingual customer support platform that connects customers, support agents, and managers through one shared request workflow. Two purpose-built applications use the same Supabase backend: a **React customer portal** and an **Angular support workspace**.
 
-**React 19 · Angular 21 · TypeScript · Supabase Auth · PostgreSQL · Private Storage**
+[![Verify platform](https://github.com/omar65978/wasl-support-platform/actions/workflows/verify.yml/badge.svg)](https://github.com/omar65978/wasl-support-platform/actions/workflows/verify.yml)
 
-![Customer portal](docs/screenshots/customer-desktop.png)
+[Customer portal](https://wasl-support-platform-nine.vercel.app/customer/) · [Support workspace](https://wasl-support-platform-nine.vercel.app/support/) · [Setup guide](docs/BACKEND.md) · [Architecture](docs/ARCHITECTURE.md)
 
-## Delivery status
+## Overview
 
-The application source, production builds, database migration, configuration examples, test tooling, and documentation are included. Both milestones are implemented.
+Wasl brings request ownership, urgency, progress, and communication into one place. Customers can ask for help and follow the conversation; support teams can claim work, collaborate privately, and provide a clear resolution.
 
-**Update 1.1:** both applications now use project `vbsrwnjyiskbjangbohb`, with persistent light/dark appearance and a single-project Vercel deployment. The owner reports that the database setup is already complete. **Do not rerun the initial SQL setup on this configured project.**
+- **Two connected applications:** React for customers, Angular for support employees.
+- **Three distinct roles:** customer, agent, and manager, with server-enforced permissions.
+- **One shared workflow:** create, assign, investigate, communicate, resolve, and reopen.
+- **English and Arabic:** translated interfaces, RTL layouts, and responsive navigation.
+- **Light and dark appearance:** persistent preferences, system-aware defaults, and cross-tab synchronization.
 
-The new public Auth endpoint responds successfully, and anonymous requests to `requests` and `profiles` are denied. Authenticated hosted workflows have not been independently tested without the owner's test-user credentials. No admin key or password is included.
+## Preview
 
-An explicitly labeled browser-local demo is available for exploring both interfaces before backend setup. It is not a security boundary, does not contain real customer information, and never substitutes for a failed live request.
+### Customer portal — light mode
 
-## What is included
+![Customer portal showing request statuses and the create-request action](docs/screenshots/customer-desktop.png)
 
-### Customer portal
+### Support workspace — dark mode
 
-- Sign in, sign out, and customer registration with email confirmation.
-- Create a support request with a category and urgency.
-- Search and follow the customer's own requests.
-- View request progress, public conversation, attachments, and resolution.
-- Reply while a request is active; reopen a resolved request to continue.
-- English and Arabic interfaces with persistent language preference and RTL support.
-- Light/dark toggle on sign-in and application screens, saved across reloads and synchronized across same-origin tabs.
+![Support workspace showing ownership, urgency, filters, and request pagination](docs/screenshots/support-dark.png)
 
-### Support workspace
+Screenshots use sample data. Additional [screenshots](docs/screenshots) include conversations, manager reporting, and Arabic mobile layouts.
 
-- Search, category/status/urgency filters, ownership queues, sorting, and server-side pagination.
-- Claim unassigned work, send public replies, and add private internal notes.
-- Set progress, adjust urgency, and resolve assigned requests with a written resolution.
-- Manager-only reassignment and server-aggregated workload reporting.
-- The same request lifecycle and business vocabulary as the customer portal.
+## Try the applications
 
-### Shared foundation
+| Application       | Link                                                                     | Intended users      |
+| ----------------- | ------------------------------------------------------------------------ | ------------------- |
+| Customer portal   | [Open portal](https://wasl-support-platform-nine.vercel.app/customer/)   | Customers           |
+| Support workspace | [Open workspace](https://wasl-support-platform-nine.vercel.app/support/) | Agents and managers |
 
-- One user model and one database for both applications.
-- Row-level security, private file access, and server-side role/ownership checks.
-- Transactional mutations with version checks and row locks.
-- Canonical data refresh after changes; message drafts survive rejected updates.
-- Visible loading, empty, validation, success, and failure states.
-- Local font files, keyboard focus styles, semantic controls, and reduced-motion support.
+**Demo access** uses browser-local sample data and is clearly labeled. It requires no account, does not write to Supabase, and does not support attachments. Use the two applications on the same origin and browser to explore the shared demo workflow.
+
+**Signed-in access** uses Supabase Auth and the shared database. Sign in with a provisioned account to use real requests and protected attachments. Demo records are not automatically transferred to the connected workspace.
+
+## Features
+
+### For customers
+
+- Register and sign in using email and password.
+- Submit a request with a description, category, and urgency.
+- Search and filter their own requests.
+- Follow progress and exchange messages with the support team.
+- Upload and download permitted attachments.
+- Review the resolution and reopen a request when more help is needed.
+
+### For support agents
+
+- Find urgent, unassigned, or personally assigned work.
+- Search, filter, sort, and paginate requests without loading the entire dataset.
+- Claim an available request and take responsibility for it.
+- Send customer-visible replies and separate internal notes.
+- Update progress, adjust urgency, and resolve assigned requests.
+
+### For support managers
+
+- Review the complete request workload.
+- Reassign requests to support employees.
+- Access server-aggregated workload summaries.
+- Manage requests beyond their personal assignments.
+
+### Across both applications
+
+- Shared user, role, and request models.
+- Loading, empty, validation, success, and error states.
+- Preserved message drafts when an update is rejected.
+- Version checks that prevent stale updates from silently overwriting newer changes.
+- Periodic refresh for current request information.
+- Semantic controls, keyboard focus, reduced-motion support, and self-hosted fonts.
+
+## Technology
+
+| Area                 | Implementation                                                            |
+| -------------------- | ------------------------------------------------------------------------- |
+| Customer application | React 19, React Router, Vite                                              |
+| Support application  | Angular 21, standalone components, guarded routes                         |
+| Shared code          | TypeScript models, repository, Auth controller, translations, theme logic |
+| Authentication       | Supabase Auth                                                             |
+| Database             | PostgreSQL, row-level security, transactional RPCs                        |
+| File storage         | Private Supabase Storage bucket                                           |
+| Tests                | Vitest, PGlite, Playwright, axe-core                                      |
+| Deployment           | Vercel static hosting for both applications                               |
+| Automation           | GitHub Actions                                                            |
+
+## Architecture
+
+```text
+React customer portal ──┐
+                        ├── Shared TypeScript layer ── Supabase Auth
+Angular support app ────┘                          ├── PostgreSQL + RLS + RPCs
+                                                  └── Private Storage
+```
+
+Authentication state is managed by a shared controller. Each application renders the appropriate experience, while the database independently enforces access to requests, messages, actions, and files.
+
+Frontend route guards improve navigation; they are not the security boundary. See [Architecture and security](docs/ARCHITECTURE.md) for implementation details and design decisions.
+
+### Request lifecycle
+
+```text
+New → In progress ⇄ Waiting for customer → Resolved
+          ↑                                    │
+          └──────────── Reopen ────────────────┘
+```
+
+A customer reply to a waiting request returns it to investigation. Resolving requires an assigned employee and a written resolution. Resolved requests reject ordinary messages and uploads until reopened.
+
+### Permission summary
+
+| Capability                 | Customer              | Agent                      | Manager              |
+| -------------------------- | --------------------- | -------------------------- | -------------------- |
+| Read requests              | Own requests          | All requests               | All requests         |
+| Create requests            | Yes                   | No                         | No                   |
+| Claim unassigned work      | No                    | Yes                        | Yes                  |
+| Reply and upload files     | Own active requests   | Assigned active requests   | Any active request   |
+| Read internal notes        | No                    | Yes                        | Yes                  |
+| Add internal notes         | No                    | Assigned active requests   | Any active request   |
+| Update progress or resolve | No                    | Assigned requests          | Any assigned request |
+| Reopen requests            | Own resolved requests | Assigned resolved requests | Any resolved request |
+| Reassign responsibility    | No                    | No                         | Yes                  |
+| View workload reports      | No                    | No                         | Yes                  |
+
+An unassigned request must be claimed or assigned before replying through the support interface. Detailed lifecycle rules and ownership assumptions are documented in [ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Quick start
 
 ### Requirements
 
-- Node.js **20.19+** or **22.12+**; Node 22 LTS is recommended.
-- npm 10+.
-- A Supabase project you administer.
-- Git, if you want to preserve and publish the included commit history.
+- **Node.js 22 LTS recommended.** The current package configuration permits Node.js 20.19 or later; see the individual framework requirements when choosing another release.
+- **npm 10 or later.**
+- Git to clone the repository.
+- A configured Supabase project for signed-in workflows; no backend setup is needed for the browser-local demo.
+
+### Install and run
 
 ```bash
+git clone https://github.com/omar65978/wasl-support-platform.git
+cd wasl-support-platform
 npm ci
 npm run build
 npm run preview
 ```
 
-Open:
-
-| Application       | URL                               |
+| Application       | Local URL                         |
 | ----------------- | --------------------------------- |
 | Customer portal   | `http://localhost:4173/customer/` |
 | Support workspace | `http://localhost:4173/support/`  |
 
-Choose **Try as a customer**, **Try as an agent**, or **Try as a manager** to explore the demo. For cross-application demo workflows, use these same-origin preview URLs: browser-local demo data is not shared between development ports.
+Select a demo role to explore the product, or sign in with an existing account to use the configured backend.
 
-The downloadable delivery archive also includes prebuilt assets. In its source folder, `node scripts/serve.mjs` starts the included production preview without installing dependencies. The Git repository intentionally does not track generated builds; a clone requires `npm ci && npm run build` first.
-
-### Development servers
+### Development
 
 ```bash
 npm run dev
@@ -82,184 +165,179 @@ npm run dev
 - React: `http://localhost:5173/customer/`
 - Angular: `http://localhost:4200/support/`
 
-Both use the same Supabase project. Authentication storage is origin-scoped, so sign in separately on each development port. Use separate browser profiles for customer/agent/manager live demonstrations.
+Both applications use the same configured Supabase project. Browser storage is origin-scoped: development ports have separate sessions and separate demo data. Use the combined preview on port 4173 for a cross-application demo. Use separate browser profiles when testing multiple signed-in users simultaneously.
 
-## Deploy to Vercel
+## Configuration and backend setup
 
-Import the repository root using **Other** as the framework. `vercel.json` uses `npm run build:vercel` and publishes `site/`, containing `/customer/` and `/support/`. Add `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` to Vercel Production/Preview environment settings using the supplied public values, then deploy. Update Supabase Site URL and Redirect URLs to your actual HTTPS application paths.
+The repository includes public connection defaults for the configured Wasl instance. It does not include administrative credentials or account passwords.
 
-See [the Vercel guide](docs/VERCEL.md) for exact values and settings. No backend schema reset is needed.
+For your own instance, copy `.env.example` to `.env`, then replace both values with your own project configuration:
 
-## Set up Supabase
-
-The supplied project configuration is already in `packages/shared/src/config.ts`:
-
-```text
-https://vbsrwnjyiskbjangbohb.supabase.co
+```env
+SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_YOUR_PUBLIC_KEY
 ```
 
-For a **new, unconfigured database only**:
-
-1. Open your Supabase project's **SQL Editor**.
-2. On a fresh application schema, run the entire contents of **`supabase/setup.sql` once**.
-3. In **Authentication → URL Configuration**, set the Site URL to your customer portal URL. Add development/production portal URLs as allowed redirects.
-4. Keep email confirmation enabled for public registration. Configure SMTP before inviting real users.
-5. Create the test accounts described below.
-6. Sign in normally rather than using the demo buttons.
-7. Run the live test suite before accepting the hosted integration.
-
-`setup.sql` is an exact copy of the versioned migration. It creates enum types, tables, indexes, policies, transactional RPCs, the private storage bucket, and an Auth profile trigger. Existing Auth users are backfilled as customers; roles in user-editable metadata are ignored.
-
-**Do not run it repeatedly or against an existing conflicting application schema.** It is a versioned initial migration, not a destructive reset script. Back up existing data first. See [backend setup](docs/BACKEND.md) for roles, manual test accounts, Storage, and the optional CLI path.
-
-### Test accounts
-
-| Email                      | Role            | Application                 |
-| -------------------------- | --------------- | --------------------------- |
-| `customer@wasl.test`       | Customer        | React                       |
-| `other.customer@wasl.test` | Customer        | React; isolation tests      |
-| `agent@wasl.test`          | Support agent   | Angular                     |
-| `agent.two@wasl.test`      | Support agent   | Angular; reassignment tests |
-| `manager@wasl.test`        | Support manager | Angular                     |
-
-No shared password is committed. Choose your own test password of at least 12 characters.
-
-You can create accounts through **Authentication → Users → Add user**, enable confirmation, and assign staff roles in SQL as documented in [BACKEND.md](docs/BACKEND.md). Alternatively:
+Then run:
 
 ```bash
-cp .env.seed.example .env.seed
-```
-
-Set your project service-role/secret admin key and `TEST_USER_PASSWORD` **locally only**, then run:
-
-```bash
-npm run users:seed
-```
-
-The seed command creates or updates the five test accounts and assigns roles. Existing test-account passwords are reset to your supplied password. Do not run it against production employees. Delete `.env.seed` after use or store it securely outside the repository.
-
-### Public configuration
-
-The URL and publishable key are public application configuration, not privileged credentials. They are safe in browser code only because database and Storage permissions are enforced independently.
-
-To use another hosted project:
-
-```bash
-cp .env.example .env
 npm run config
 npm run build
 ```
 
-Edit `.env` before `npm run config`. Root build/dev commands also refresh configuration automatically. Vercel environment values take precedence and must contain both fields. The configuration generator accepts only an HTTPS URL and an `sb_publishable_` key. Never place an admin key in a frontend configuration file.
+Root build and development commands also refresh public configuration automatically. Environment variables take precedence over local files. Only hosted HTTPS Supabase URLs and publishable keys are accepted by the configuration script.
 
-## Roles and lifecycle
+**Never put a database password, an `sb_secret_` key, or a service-role key in browser configuration.** A publishable key is public; data protection depends on correctly enforced database and Storage permissions.
 
-| Capability                  | Customer              | Agent                      | Manager                  |
-| --------------------------- | --------------------- | -------------------------- | ------------------------ |
-| Read requests               | Own only              | All                        | All                      |
-| Create a request            | Yes                   | No                         | No                       |
-| Claim an unassigned request | No                    | Yes                        | Yes                      |
-| Public reply or attachment  | Own active requests   | Assigned active requests   | Any active request       |
-| Internal note or attachment | Never                 | Assigned active requests   | Any active request       |
-| Read internal notes         | Never                 | Yes                        | Yes                      |
-| Change progress or urgency  | No                    | Assigned active requests   | Assigned active requests |
-| Resolve                     | No                    | Assigned requests          | Any assigned request     |
-| Reopen                      | Own resolved requests | Assigned resolved requests | Any resolved request     |
-| Reassign                    | No                    | No                         | Yes                      |
-| Workload report             | No                    | No                         | Yes                      |
+### Initialize a new database
 
-```text
-New → In progress ⇄ Waiting for customer → Resolved
-          ↑                                    │
-          └──────────── Reopen ────────────────┘
-```
+For a fresh, unconfigured project, follow [BACKEND.md](docs/BACKEND.md). It covers:
 
-A customer reply to a waiting request returns it to `in_progress`. Resolving requires an owner and a resolution of at least 10 characters. Resolved requests reject ordinary messages and uploads. A manager can reassign a resolved request without reopening it.
+- Applying the initial schema and policies through SQL Editor or the Supabase CLI.
+- Configuring authentication URLs and email delivery.
+- Creating test accounts and assigning staff roles.
+- Setting up and verifying private attachments.
 
-## Attachments
+**Do not rerun `supabase/setup.sql` on an already initialized database.** It is an initial migration, not a reset script. Existing instances should receive deliberate, versioned migrations rather than repeated initialization.
 
-- PDF, PNG, and JPEG only; maximum **5 MiB per file** and **50 attachments per request**.
-- Client-side size, filename, MIME, and signature validation.
-- Storage bucket enforces allowed MIME types and size independently.
-- A reservation, protected upload, and finalization workflow verifies uploaded metadata.
-- Private/internal visibility is enforced for both attachment records and direct Storage access.
-- Downloads use the authenticated Storage endpoint and a local download link; there are no public file URLs.
-- Attachments are disabled in demo mode. Use the connected workspace to verify file operations.
+Staff accounts are administrator-managed. Public registration always creates a customer; user-editable metadata cannot grant an agent or manager role.
+
+## Attachments and data protection
+
+- Accepted types: **PDF, PNG, and JPEG**.
+- Maximum size: **5 MiB per file**.
+- Maximum attachments: **50 per request**.
+- Files are uploaded to randomized, reserved paths in a private bucket.
+- Upload finalization rechecks ownership, request state, and stored metadata.
+- Internal notes and internal attachment records are excluded from customer queries.
+- Downloads use authenticated Storage access, not public file URLs.
+
+Client-side file signature checks complement server-side MIME and size restrictions; they are not server-side malware scanning. See the [operational limits](#operational-limits) before a production rollout.
 
 ## Testing
 
+### Database and shared logic
+
 ```bash
 npm test
+```
+
+The database suite executes the delivered SQL migration in PGlite using minimal Auth and Storage fixtures. Shared tests cover validation, permission helpers, translations, configuration, and theme behavior.
+
+### Browser workflows
+
+```bash
 npm run build
 npx playwright install --with-deps chromium
 npm run test:e2e
+```
+
+Playwright covers the cross-application request workflow, role guards, private notes, filtering and pagination, conflict recovery, Arabic/mobile layouts, keyboard interactions, theme persistence, and representative automated accessibility checks.
+
+### Quality checks
+
+```bash
 npm run format:check
+npm run verify
 npm audit
 ```
 
-| Layer                      | Coverage                                                                                                                                    |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| PostgreSQL migration tests | Actual RLS/RPC SQL executed in PGlite with minimal Auth and Storage schema fixtures                                                         |
-| Shared unit tests          | Validation, translations, permission helpers, demo isolation, and stale mutations                                                           |
-| Playwright                 | Cross-app workflow, private notes, URL guards, search/pagination, failure recovery, Arabic/mobile, keyboard dialog, automated accessibility |
-| Live hosted tests          | Real Supabase Auth, RLS, Storage upload/download, isolation, ownership, manager aggregation                                                 |
+The recorded version 1.1 verification includes **34 SQL/unit/configuration tests and 16 browser tests**. The workflow badge reports the latest GitHub Actions result. These counts are not a claim of complete coverage or accessibility certification.
 
-The embedded tests exercise real PostgreSQL policies, **not** the deployed Supabase HTTP/Auth/Storage services. Browser tests use demo data and are not evidence of hosted security. The independent live suite covers those integration boundaries:
+### Hosted integration
+
+Copy `.env.live.example` to `.env.live`, supply the configured test project's URL, publishable key, and test-account password, then run:
 
 ```bash
-cp .env.live.example .env.live
 npm run test:live
 ```
 
-Set `TEST_USER_PASSWORD` in `.env.live` first. The live suite needs only the publishable key and test-user credentials, not an admin key. It creates a verification request and two small files, completes the request, and retains the evidence. Run it on a test project, not a production tenant.
+Use a dedicated test project and the documented test accounts. This suite creates a verification request and two small files, checks real API and Storage permissions, and retains the evidence. Keep `.env.live` private.
 
-See [verification notes](docs/VERIFICATION.md) for the recorded results and unverified boundaries.
+**Local SQL tests and demo browser tests do not establish that a hosted Supabase deployment is configured correctly.** Authenticated hosted verification is a separate step. See [VERIFICATION.md](docs/VERIFICATION.md) for the recorded scope and remaining integration checks.
 
-## Repository layout
+## Deploy to Vercel
+
+Import the **repository root** as one Vercel project. Do not select an individual application directory.
+
+| Setting          | Value                  |
+| ---------------- | ---------------------- |
+| Framework Preset | `Other`                |
+| Root Directory   | `./`                   |
+| Install Command  | `npm ci`               |
+| Build Command    | `npm run build:vercel` |
+| Output Directory | `site`                 |
+
+Set these environment variables for Production and Preview:
+
+```text
+SUPABASE_URL
+SUPABASE_PUBLISHABLE_KEY
+```
+
+Use your complete project URL, such as `https://YOUR_PROJECT_REF.supabase.co`, **not** the generic `https://supabase.co` address. Cloud builds require both variables; changing them requires a redeployment.
+
+After deployment:
+
+1. Set Supabase **Site URL** to the deployed customer portal URL.
+2. Add the exact `/customer/` and `/support/` URLs to **Redirect URLs**.
+3. Verify registration confirmation, sign-in, requests, and protected attachments.
+
+Both applications share the deployed origin. The root redirects to `/customer/`, and hash-based application routes support direct links and refreshes without application-specific server rewrites.
+
+See [VERCEL.md](docs/VERCEL.md) for the complete guide and troubleshooting. [DEPLOYMENT.md](docs/DEPLOYMENT.md) covers alternative Node, Docker, and static hosting options.
+
+## Repository structure
 
 ```text
 apps/
-  customer/                 React + Vite customer portal
-  support/                  Angular standalone components and guarded routes
+  customer/                 React customer portal
+  support/                  Angular support workspace
 packages/shared/src/
-  auth.ts                   Framework-independent authentication controller
-  api.ts                    Shared Supabase data access and file workflow
-  types.ts                  Roles, lifecycle, model types, validation
-  i18n.ts                   English and Arabic application copy
-  demo.ts                   Explicit browser-only sample environment
+  auth.ts                   Authentication state and account operations
+  api.ts                    Shared data access and attachment workflow
+  types.ts                  Roles, request models, and validation
+  i18n.ts                   English and Arabic interface copy
+  theme.ts                  Persistent appearance preferences
+  tokens.css                Light and dark semantic color palettes
   styles.css                Shared interface primitives
-  tokens.css                Semantic light/dark color palettes
-  theme.ts                  Persistent cross-application theme preferences
+  demo.ts                   Explicit browser-local demo environment
 supabase/
-  setup.sql                 SQL Editor entry point
-  migrations/               Versioned backend schema
-scripts/                    Configuration, accounts, preview, live verification
-tests/                     Database, unit, and browser suites
-docs/                      Architecture, setup, review, deployment, GitHub guide
+  setup.sql                 Initial SQL Editor setup
+  migrations/               Versioned database schema
+scripts/                    Build, configuration, account, and verification tools
+tests/                      SQL, unit, and browser suites
+docs/                       Architecture, setup, deployment, and screenshots
+.github/workflows/          Continuous verification
+vercel.json                 Combined static deployment configuration
 ```
 
-## Review and delivery guides
+## Documentation
 
-- [Architecture and security](docs/ARCHITECTURE.md)
-- [Backend setup](docs/BACKEND.md)
-- [Demonstration walkthrough](docs/DEMO.md)
-- [Requirement traceability](docs/REQUIREMENTS.md)
-- [Design decisions](docs/DESIGN.md)
-- [Vercel deployment](docs/VERCEL.md)
-- [Deployment](docs/DEPLOYMENT.md)
-- [GitHub publishing and commit history](docs/GITHUB.md)
-- [Arabic handoff](docs/HANDOFF-AR.md)
+| Guide                                            | Purpose                                                        |
+| ------------------------------------------------ | -------------------------------------------------------------- |
+| [Architecture](docs/ARCHITECTURE.md)             | Auth, permissions, data access, concurrency, and scaling       |
+| [Backend setup](docs/BACKEND.md)                 | Database initialization, test accounts, and Storage            |
+| [Workflow walkthrough](docs/DEMO.md)             | Customer, agent, and manager demonstration                     |
+| [Verification record](docs/VERIFICATION.md)      | Executed checks and verification boundaries                    |
+| [Vercel deployment](docs/VERCEL.md)              | Build settings, environment variables, and authentication URLs |
+| [Design decisions](docs/DESIGN.md)               | Visual direction, typography, and appearance modes             |
+| [Requirement traceability](docs/REQUIREMENTS.md) | Requirements mapped to implementation and tests                |
+| [Arabic guide](docs/HANDOFF-AR.md)               | Setup and deployment instructions in Arabic                    |
 
 ## Operational limits
 
-- Updates are polled every 15 seconds while the page is visible; this is not realtime push.
-- Request lists use indexed search and offset pagination, 12 rows at a time. Deep-page offsets and exact counts should be revisited for very large datasets.
-- Conversations load the latest 40 messages and allow earlier pages; the hosted PostgREST row cap currently limits a single expanded conversation to 1,000 messages. Activity shows the latest 40 events. The complete history remains in the database.
-- The staff picker supports up to 1,000 employees; larger organizations need a paginated directory picker.
-- Upload failures attempt cleanup. A browser crash can leave an unfinished reservation/object requiring administrator cleanup.
-- File signatures are checked in the browser, not trusted as server-side malware scanning. Add server-side content inspection/quarantine before accepting untrusted files at production scale.
-- There are no offline writes, email notifications, password-reset UI, satisfaction ratings, saved filters, or request deletion. These are outside the required milestones.
-- Supabase project limits, SMTP, backups, abuse controls, legal retention, monitoring, and production-domain configuration are the operator's responsibility.
-- Automated accessibility checks cover representative workflows; they do not replace a full manual assistive-technology audit.
+- Visible pages refresh every **15 seconds**; updates are polled, not pushed in realtime.
+- Request browsing uses indexed search and offset pagination. Very large datasets may require keyset pagination and revised count strategies.
+- Conversations initially load 40 messages; the current expanded-window implementation is constrained by the hosted PostgREST row cap, documented as 1,000 messages. Activity displays the latest 40 events.
+- The staff selector supports up to 1,000 employees.
+- Interrupted uploads can leave unfinished reservations or objects requiring administrator cleanup.
+- Production file intake may require server-side content inspection, quarantine, and malware scanning.
+- Email notifications, password-reset UI, offline writes, saved filters, and satisfaction ratings are not implemented.
+- SMTP, backups, abuse controls, retention, monitoring, and deployment configuration remain operational responsibilities.
 
-Authored source files contain no inline code comments. Architecture and implementation explanations live in the documentation. Third-party font licenses are retained under `assets/fonts/`.
+## License and attribution
+
+No project-wide open-source license has been assigned in this repository. Public visibility alone does not grant unrestricted reuse rights.
+
+Manrope and Noto Sans Arabic are distributed with their respective licenses under [`assets/fonts/`](assets/fonts). Third-party dependencies retain their own licenses.
